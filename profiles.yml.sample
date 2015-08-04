@@ -1,0 +1,41 @@
+default:
+  paths:
+    features: features
+    bootstrap: %behat.paths.features%/bootstrap
+  extensions:
+    Behat\MinkExtension\Extension:
+      base_url:
+      goutte: ~
+      selenium2: ~
+
+win-chrome:
+    extensions:
+        Behat\MinkExtension\Extension:
+            default_session: selenium2
+            selenium2:
+                browser: chrome
+                capabilities:
+                    platform: 'Windows 2012'
+                    browser: chrome
+                    version: '26'
+                    name: Tests
+
+android:
+  context:
+    class:  'FeatureContext'
+  extensions:
+    Behat\MinkExtension\Extension:
+      selenium2:
+        browser: android
+        wd_host: 
+        capabilities: { platform:Linux,version:4}
+
+iPhone:
+  context:
+    class:  'FeatureContext'
+  extensions:
+    Behat\MinkExtension\Extension:
+      selenium2:
+        browser: iphone
+        wd_host: 
+        capabilities: { platform:Mac 10.,version: 6}
