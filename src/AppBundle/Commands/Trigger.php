@@ -17,7 +17,7 @@ class Trigger extends Command {
    //configuration of the command's name, arguments, options, etc
     protected function configure()
     {
-      $this->setName('bh:trigger')
+      $this->setName('trigger')
            ->setDescription("Reads from bhqueue.txt/profiles.yml/projects.yml to create new behat configuration file as needed and runs tests");
     }
 
