@@ -12,9 +12,9 @@ Behat Test Automator is an efficient way to have behat testing run automatically
 * PHP 5.5+ (date.timezone must be defined in php.ini for these commands to work properly)
 
 ## Installation
-1. Clone the repository with `git clone`
-2. In the project directory, run `composer install` (No database configuration needed.)
-3. Run `composer update` to make sure we have the latest versions of Symfony components.
+1. Include behat-ci in your global composer.json with `composer global require knectar/behat-ci`
+2. Run `composer global update` to install (No database configuration needed.)
+3. Update the PATH to include the application's app directory (path/to/global/.composer/vendor/knectar/behat-ci/app)
 4. That is all, we can now run this application's commands!
 
 ## Configuration
