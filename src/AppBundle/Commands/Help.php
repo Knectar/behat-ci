@@ -17,9 +17,9 @@ class Help extends Command {
     protected function configure()
     {
       $this->setName('bh')
-           ->setDescription("bh is run with subarguments bh:schedule or bh:trigger. bh:schedule is meant to run on beanstalk post deploy commands. bh:trigger is meant to be called by cron on the server.")
-           ->addArgument('bh:schedule', InputArgument::OPTIONAL, "Writes to bhqueue.txt indicating that tests should be run (also to generate a new configuration file as needed). To be run on beanstalk post-deploy with --e flag indicating environment")
-           ->addArgument('bh:trigger', InputArgument::OPTIONAL, "Reads from bhqueue.txt/environments.yml to create new behat configuration file as needed and runs tests");
+           ->setDescription("bh is run with subarguments schedule or trigger. bh schedule is meant to run on beanstalk post deploy commands. bh trigger is meant to be called by cron on the server.")
+           ->addArgument('bh schedule', InputArgument::OPTIONAL, "Writes to bhqueue.txt indicating that tests should be run (also to generate a new configuration file as needed). To be run on beanstalk post-deploy with --e flag indicating environment")
+           ->addArgument('bh trigger', InputArgument::OPTIONAL, "Reads from bhqueue.txt/environments.yml to create new behat configuration file as needed and runs tests");
       }
 
     //executes code when command is called
@@ -30,6 +30,6 @@ class Help extends Command {
       $error_style = new OutputFormatterStyle('white', 'red', array('bold'));
       $output->getFormatter()->setStyle('header', $header_style);
       $output->getFormatter()->setStyle('err', $error_style);
-      $output->writeln('<err>Bh must be run with a subcommand (e.g., "bh:schedule"). Run bh --help for more details.</err>');
+      $output->writeln('<err>Bh must be run with a subcommand (e.g., "bh schedule"). Run bh --help for more details.</err>');
       }
     }

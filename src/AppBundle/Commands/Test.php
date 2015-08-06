@@ -14,7 +14,7 @@ class Test extends Command {
    //configuration of the command's name, arguments, options, etc
     protected function configure()
     {
-      $this->setName('bh:test')
+      $this->setName('test')
            ->setDescription("Runs the behat tests as specified in the behat.yml configuration file");
       }
 
