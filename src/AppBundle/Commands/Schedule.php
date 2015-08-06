@@ -17,7 +17,7 @@ class Schedule extends Command {
    //configuration of the command's name, arguments, options, etc
     protected function configure()
     {
-      $this->setName('bh:schedule')
+      $this->setName('schedule')
            ->setDescription("Writes to bhqueue.txt indicating that tests should be run (also to generate a new configuration file as needed). To be run on beanstalk post-deploy commands with the -e flag specifying environments")
            ->addArgument('repo_name', InputArgument::REQUIRED, "The name of the project repo (%REPO_NAME% in Beanstalk post-deployment)")
            ->addOption('e',
