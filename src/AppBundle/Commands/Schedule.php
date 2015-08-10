@@ -39,7 +39,7 @@ class Schedule extends Command {
         } else {
           //write timestamp, project name, instance to queue.
           $projName = $input->getArgument('repo_name');
-          $newQueueTestOnly = fopen("bhqueue.txt", "a") or die("Unable to open file!");
+          $newQueueTestOnly = fopen("/etc/bhqueue.txt", "a") or die("Unable to open file!");
           fwrite($newQueueTestOnly, "Test scheduled on: " . date("D M j G:i:s") . " for project:" . $projName ." on environment:".$e."\n");
           $output->writeln('Schedule request received');
           fclose($newQueueTestOnly);
