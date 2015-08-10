@@ -10,10 +10,8 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 use Symfony\Component\Yaml\Parser;
 use Symfony\Component\Yaml\Exception\ParseException;
-use Symfony\Component\Yaml\Dumper;
 
 class Schedule extends Command {
-
    //configuration of the command's name, arguments, options, etc
     protected function configure()
     {
@@ -37,9 +35,18 @@ class Schedule extends Command {
           $output->writeln('<error>Please enter a valid environment! (dev, production, all)<error>');
           return 1;
         } else {
+          try{
+            //Create the yaml parser
+            $yaml = new Parser();
+            //read queue location from config.yml
+            $config = $yaml->parse(file_get_contents('config.yml'));
+            $bhQ = $config['locations']['queue'];
+          } catch (ParseException $e) {
+              printf("Unable to parse the YAML string: %s", $e->getMessage());
+          }
           //write timestamp, project name, instance to queue.
           $projName = $input->getArgument('repo_name');
-          $newQueueTestOnly = fopen("/etc/bhqueue.txt", "a") or die("Unable to open file!");
+          $newQueueTestOnly = fopen($bhQ, "a") or die("Unable to open file!");
           fwrite($newQueueTestOnly, "Test scheduled on: " . date("D M j G:i:s") . " for project:" . $projName ." on environment:".$e."\n");
           $output->writeln('Schedule request received');
           fclose($newQueueTestOnly);
