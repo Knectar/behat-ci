@@ -41,18 +41,15 @@ whitetest: #the overall project. uses the beanstalkapp mancine name
 ```
 
 ## Usage
-All commands must be run in the project directory and prefixed with app/console.
+Note: if you do not install behat-ci globally, all commands must be run in the project directory and prefixed with app/console.
 For details on the commands in the console, run
 
-    app/console bh --help
+    bh --help
 
 The application relies on 2 key commands,
 
-    app/console bh:schedule
+    bh schedule
 Will be called when changes are pushed. This command updates bhqueue.txt, which tells the application that tests need to be run.
 
-    app/console bh:trigger
+    bh trigger
 Is meant to be called periodically (every minute) by cron on the server. It checks bhqueue to see if a change has been made in the project and if testing needs to be done. If a new behat.yml configuration file is needed, it will read in the profiles from bhqueue and grab the necessary variables from the environments.yml to generate the profiles in a new configuration file and then run the testing command on the server.
-
-
-TODO: Later

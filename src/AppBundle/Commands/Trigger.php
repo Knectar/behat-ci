@@ -48,12 +48,12 @@ class Trigger extends Command {
         //Write the scheduled tests to the log, remove from queue
         file_put_contents("bhqueuelog.txt", file_get_contents($bhQ), FILE_APPEND);
         file_put_contents($bhQ, "");
-        //shell_exec($commandtoruntests);
+        return 0;
       }
 
     }
 
-    //Forms a map array of projects => environments from the queue
+    //Forms a map array of projects => environments from the queue by parsing each line of the queue string
     protected function readQueue($queue){
       $projectList = array();
       $file = fopen($queue, "r") or exit("Unable to open file!");
@@ -88,6 +88,11 @@ class Trigger extends Command {
       } catch (ParseException $e) {
           printf("Unable to parse the YAML string: %s", $e->getMessage());
       }
+      //Checking if the .yml files exist in the project directory
+      if($profiles === FALSE || $projects === FALSE){
+        $output->writeln('<error>profiles.yml and projects.yml must be populated and saved to the project home directory<error>');
+        return 1;
+      }
 
       //Key-value matching variables in project to profile and then to the output yml
         $behatYaml = array();
@@ -114,7 +119,7 @@ class Trigger extends Command {
         shell_exec('behat -c /tmp/'.$project.'_'.$env.'.yml');
 
         //Remove the file after tests have been run
-        //shell_exec('rm /tmp/'.$project.'_'.$env.'.yml');
+        shell_exec('rm /tmp/'.$project.'_'.$env.'.yml');
 
     }
   }

@@ -32,7 +32,7 @@ class Schedule extends Command {
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $e=$input->getOption('e');
-        //Make sure the input is an proper environment
+        //Make sure the input is a proper environment
         if($e!='all' && $e!='dev' && $e!='production'){
           $output->writeln('<error>Please enter a valid environment! (dev, production, all)<error>');
           return 1;
