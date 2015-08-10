@@ -32,7 +32,7 @@ class Trigger extends Command {
       $output->writeln('Trigger request received');
 
       //bhqueue file name
-      $bhQ = 'bhqueue.txt';
+      $bhQ = '/etc/bhqueue.txt';
       //Check if there are tests scheduled, i.e., queue file is not empty
       if (file_get_contents($bhQ) != ''){
         $projectList = $this->readQueue($bhQ);
@@ -46,7 +46,7 @@ class Trigger extends Command {
           }
         }
         //Write the scheduled tests to the log, remove from queue
-        file_put_contents("bhqueuelog.txt", file_get_contents($bhQ), FILE_APPEND);
+        file_put_contents("/etc/bhqueuelog.txt", file_get_contents($bhQ), FILE_APPEND);
         file_put_contents($bhQ, "");
         return 0;
       }
