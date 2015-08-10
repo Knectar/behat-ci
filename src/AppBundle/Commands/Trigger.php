@@ -82,9 +82,12 @@ class Trigger extends Command {
       $dumper = new Dumper();
       //Read in profiles.yml and projects.yml as arrays
       try {
-        //TODO: Update file path as needed.
-          $profiles = $yaml->parse(file_get_contents('profiles.yml'));
-          $projects = $yaml->parse(file_get_contents('projects.yml'));
+        //File paths are set in config.yml.
+          $config = $yaml->parse(file_get_contents('config.yml'));
+          $projectsLocation = $config['locations']['projects.yml'];
+          $profilesLocation $config['locations']['projects.yml'];
+          $projects = $yaml->parse(file_get_contents($projectsLocation));
+          $profiles = $yaml->parse(file_get_contents($profilesLocation));
       } catch (ParseException $e) {
           printf("Unable to parse the YAML string: %s", $e->getMessage());
       }
