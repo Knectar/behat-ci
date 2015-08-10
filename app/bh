@@ -18,7 +18,7 @@ use Symfony\Component\Debug\Debug;
 use AppBundle\Commands\Help;
 use AppBundle\Commands\Schedule;
 use AppBundle\Commands\Trigger;
-use AppBundle\Commands\Test;
+use AppBundle\Commands\Clear;
 
 $input = new ArgvInput();
 $env = $input->getParameterOption(array('--env', '-e'), getenv('SYMFONY_ENV') ?: 'dev');
@@ -34,5 +34,5 @@ $application = new Application($kernel);
 $application->add(new Help());
 $application->add(new Schedule());
 $application->add(new Trigger());
-$application->add(new Test());
+$application->add(new Clear());
 $application->run($input);
