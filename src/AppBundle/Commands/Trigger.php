@@ -30,9 +30,15 @@ class Trigger extends Command {
       $output->getFormatter()->setStyle('header', $header_style);
       $output->getFormatter()->setStyle('err', $error_style);
       $output->writeln('Trigger request received');
-
-      //bhqueue file name
-      $bhQ = '/etc/bhqueue.txt';
+      //Create yml parser
+      $yaml = new Parser();
+      try{
+        //read queue location from config.yml
+        $config = $yaml->parse(file_get_contents('config.yml'));
+        $bhQ = $config['locations']['queue'];
+      } catch (ParseException $e) {
+          printf("Unable to parse the YAML string: %s", $e->getMessage());
+      }
       //Check if there are tests scheduled, i.e., queue file is not empty
       if (file_get_contents($bhQ) != ''){
         $projectList = $this->readQueue($bhQ);
@@ -76,16 +82,16 @@ class Trigger extends Command {
 
     //Generates a yml configuration using projects.yml and profiles.yml file given a project and environment
     protected function bhGen($project, $env, OutputInterface $output){
-      //Create yml parser
-      $yaml = new Parser();
       //Create the yml dumper to convert the array to string
       $dumper = new Dumper();
       //Read in profiles.yml and projects.yml as arrays
+      //Create yml parser
+      $yaml = new Parser();
       try {
         //File paths are set in config.yml.
           $config = $yaml->parse(file_get_contents('config.yml'));
           $projectsLocation = $config['locations']['projects.yml'];
-          $profilesLocation $config['locations']['projects.yml'];
+          $profilesLocation = $config['locations']['profiles.yml'];
           $projects = $yaml->parse(file_get_contents($projectsLocation));
           $profiles = $yaml->parse(file_get_contents($profilesLocation));
       } catch (ParseException $e) {
