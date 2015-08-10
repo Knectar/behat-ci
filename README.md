@@ -42,9 +42,9 @@ whitetest: #the overall project. uses the beanstalkapp mancine name
 
 ## Usage
 Note: if you do not install behat-ci globally, all commands must be run in the project directory and prefixed with app/console.
-For details on the commands in the console, run
+For details on the commands in the console, simply run
 
-    bh --help
+    bh
 
 The application relies on 2 key commands,
 
