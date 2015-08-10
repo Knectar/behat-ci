@@ -34,14 +34,14 @@ class Trigger extends Command {
       $yaml = new Parser();
       try{
         //read queue location from config.yml
-        $config = $yaml->parse(file_get_contents('config.yml'));
+        $config = $yaml->parse(file_get_contents('../config.yml'));
         $bhQ = $config['locations']['queue'];
       } catch (ParseException $e) {
           printf("Unable to parse the YAML string: %s", $e->getMessage());
       }
       //Check if there are tests scheduled, i.e., queue file is not empty
-      if (file_get_contents($bhQ) != ''){
-        $projectList = $this->readQueue($bhQ);
+      if (file_get_contents($bhQ.'.txt') != ''){
+        $projectList = $this->readQueue($bhQ.'.txt');
         foreach($projectList as $p => $e){
           if($e == 'all'){
               //generates/runs tests for both dev and prod
@@ -52,8 +52,8 @@ class Trigger extends Command {
           }
         }
         //Write the scheduled tests to the log, remove from queue
-        file_put_contents("/etc/bhqueuelog.txt", file_get_contents($bhQ), FILE_APPEND);
-        file_put_contents($bhQ, "");
+        file_put_contents($bhQ.'log.txt', file_get_contents($bhQ.'.txt'), FILE_APPEND);
+        file_put_contents($bhQ.'.txt', "");
         return 0;
       }
 
@@ -89,7 +89,7 @@ class Trigger extends Command {
       $yaml = new Parser();
       try {
         //File paths are set in config.yml.
-          $config = $yaml->parse(file_get_contents('config.yml'));
+          $config = $yaml->parse(file_get_contents('../config.yml'));
           $projectsLocation = $config['locations']['projects.yml'];
           $profilesLocation = $config['locations']['profiles.yml'];
           $projects = $yaml->parse(file_get_contents($projectsLocation));

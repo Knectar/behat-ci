@@ -46,7 +46,7 @@ class Schedule extends Command {
           }
           //write timestamp, project name, instance to queue.
           $projName = $input->getArgument('repo_name');
-          $newQueueTestOnly = fopen($bhQ, "a") or die("Unable to open file!");
+          $newQueueTestOnly = fopen($bhQ.'.txt', "a") or die("Unable to open file!");
           fwrite($newQueueTestOnly, "Test scheduled on: " . date("D M j G:i:s") . " for project:" . $projName ." on environment:".$e."\n");
           $output->writeln('Schedule request received');
           fclose($newQueueTestOnly);
