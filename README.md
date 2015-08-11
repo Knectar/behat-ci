@@ -14,8 +14,9 @@ Behat Test Automator is an efficient way to have behat testing run automatically
 ## Installation
 1. Include behat-ci in your global composer.json with `composer global require knectar/behat-ci`
 2. Run `composer global update` to install (No database configuration needed.)
-3. Update your system PATH to include the application's app directory (path/to/global/.composer/vendor/knectar/behat-ci/app)
-4. That is all, we can now run this application's commands!
+3. Run `composer install` in the directory where the app was saved. (usually /home/user/.composer/vendor/knectar/behat-ci/app)
+4. Update your system PATH to include the application's app directory (path/to/global/.composer/vendor/knectar/behat-ci/app)
+5. That is all, we can now run this application's commands!
 
 ## Configuration
 There are 2 files that control how where and on what devices a test runs on.
