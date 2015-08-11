@@ -8,7 +8,7 @@ Behat Test Automator is an efficient way to have behat testing run automatically
 ## System requirements
 * git
 * [Composer](https://getcomposer.org/)
-* The latest version of [Symfony](http://symfony.com/ "Symfony 2")
+* The latest stable version of [Symfony](http://symfony.com/ "Symfony 2")
 * PHP 5.5+ (date.timezone must be defined in php.ini for these commands to work properly)
 
 ## Installation
@@ -18,7 +18,6 @@ Behat Test Automator is an efficient way to have behat testing run automatically
 4. That is all, we can now run this application's commands!
 
 ## Configuration
-Note: by default, projects.yml, profiles.yml, bhqueue, and bhqueuelog are located in the behat-ci/ directory. If you wish to place them in a different location, use config.yml to specify their absolute paths.
 There are 2 files that control how where and on what devices a test runs on.
 
 _profiles.yml_ is a list of device profiles. Feel free to add more according to the current standards and what is available on sauce labs.
@@ -39,6 +38,8 @@ whitetest: #the overall project. uses the beanstalkapp mancine name
     - android
     - iPhone
 ```
+
+Note: by default, projects.yml, profiles.yml, bhqueue, and bhqueuelog are located in the behat-ci/ directory. If you wish to place them in a different location, use config.yml to specify their absolute paths.
 
 ## Usage
 For details on the commands in the console, simply run
