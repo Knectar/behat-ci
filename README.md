@@ -14,11 +14,11 @@ Behat Test Automator is an efficient way to have behat testing run automatically
 ## Installation
 1. Include behat-ci in your global composer.json with `composer global require knectar/behat-ci`
 2. Run `composer global update` to install (No database configuration needed.)
-3. Update the PATH to include the application's app directory (path/to/global/.composer/vendor/knectar/behat-ci/app)
+3. Update your system PATH to include the application's app directory (path/to/global/.composer/vendor/knectar/behat-ci/app)
 4. That is all, we can now run this application's commands!
 
 ## Configuration
-
+Note: by default, projects.yml, profiles.yml, bhqueue, and bhqueuelog are located in the behat-ci/ directory. If you wish to place them in a different location, use config.yml to specify their absolute paths.
 There are 2 files that control how where and on what devices a test runs on.
 
 _profiles.yml_ is a list of device profiles. Feel free to add more according to the current standards and what is available on sauce labs.
@@ -41,7 +41,6 @@ whitetest: #the overall project. uses the beanstalkapp mancine name
 ```
 
 ## Usage
-Note: if you do not install behat-ci globally, all commands must be run in the project directory and prefixed with app/console.
 For details on the commands in the console, simply run
 
     bh
