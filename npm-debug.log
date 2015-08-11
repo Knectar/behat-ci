@@ -9,7 +9,7 @@
 5 error     <npm-@googlegroups.com>
 6 error System Linux 3.16.0-38-generic
 7 error command "/usr/bin/nodejs" "/usr/bin/npm" "completion"
-8 error cwd /home/jake/Knectar/behat-test-automator
+8 error cwd /home/jake/Knectar/behat-ci
 9 error node -v v0.10.25
 10 error npm -v 1.3.10
 11 error path /usr/share/npm/lib/utils/completion.sh

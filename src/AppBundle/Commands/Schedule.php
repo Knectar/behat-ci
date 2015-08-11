@@ -39,7 +39,7 @@ class Schedule extends Command {
             //Create the yaml parser
             $yaml = new Parser();
             //read queue location from config.yml
-            $config = $yaml->parse(file_get_contents('../config.yml'));
+            $config = $yaml->parse(file_get_contents(dirname(__FILE__) . '/../../../config.yml'));
             $bhQ = $config['locations']['queue'];
           } catch (ParseException $e) {
               printf("Unable to parse the YAML string: %s", $e->getMessage());
