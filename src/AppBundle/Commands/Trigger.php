@@ -34,7 +34,7 @@ class Trigger extends Command {
       $yaml = new Parser();
       try{
         //read queue location from config.yml
-        $config = $yaml->parse(file_get_contents('../config.yml'));
+        $config = $yaml->parse(file_get_contents(dirname(__FILE__) . '/../../../config.yml'));
         $bhQ = $config['locations']['queue'];
       } catch (ParseException $e) {
           printf("Unable to parse the YAML string: %s", $e->getMessage());
@@ -89,7 +89,7 @@ class Trigger extends Command {
       $yaml = new Parser();
       try {
         //File paths are set in config.yml.
-          $config = $yaml->parse(file_get_contents('../config.yml'));
+          $config = $yaml->parse(file_get_contents(dirname(__FILE__) . '/../../../config.yml'));
           $projectsLocation = $config['locations']['projects.yml'];
           $profilesLocation = $config['locations']['profiles.yml'];
           $projects = $yaml->parse(file_get_contents($projectsLocation));
