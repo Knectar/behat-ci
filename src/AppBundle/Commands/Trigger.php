@@ -120,7 +120,7 @@ class Trigger extends Command {
         //Fill in the baseurl
         $profiles['default']['extensions']['Behat\MinkExtension\Extension']['base_url'] = $projects[$project]['environments'][$env]['base_url'];
         //Fill in path to the features directory of the project
-        $profiles['default']['paths']['features'] = '/www/srv/'.$project.'/'.$env.'/.behat';
+        $profiles['default']['paths']['features'] = '/srv/www/'.$project.'/'.$env.'/.behat';
         //Add the default profile to the generated yaml
         $behatYaml['default'] = $profiles['default'];
         //Get the list of tests to be run and add each of their profiles to the generated yaml
