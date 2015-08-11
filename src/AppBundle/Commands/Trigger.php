@@ -98,11 +98,6 @@ class Trigger extends Command {
       } catch (ParseException $e) {
           printf("Unable to parse the YAML string: %s", $e->getMessage());
       }
-      //Checking if the .yml files exist in the project directory
-      if($profiles === FALSE || $projects === FALSE){
-        $output->writeln('<error>profiles.yml and projects.yml must be populated and saved to the project home directory<error>');
-        return 1;
-      }
 
       //Key-value matching variables in project to profile and then to the output yml
         $behatYaml = array();
