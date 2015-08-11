@@ -21,7 +21,7 @@ class Schedule extends Command {
            ->addOption('e',
                         null,
                         InputOption::VALUE_OPTIONAL,
-                        'Environment. use -e=all for both dev and production',
+                        'Environment. use --e=all for both dev and production',
                         1
                       );
       }

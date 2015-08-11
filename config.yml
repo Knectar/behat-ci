@@ -3,5 +3,5 @@
 locations:
   ##Will create the queue in specified directory by default if it does not exist. Leave out the .txt extension.
   queue: /etc/bhqueue
-  projects.yml: ~/.composer/vendor/knectar/behat-ci/projects.yml
-  profiles.yml: ~/.composer/vendor/knectar/behat-ci/profiles.yml
+  projects.yml: projects.yml
+  profiles.yml: profiles.yml
