@@ -137,7 +137,7 @@ class Trigger extends Command {
         $output->writeln('<header>Generated config file for '.$project.' for env '.$env.' in /tmp</header>');
 
         //Run the behat testing command.
-        shell_exec('behat -c /tmp/'.$project.'_'.$env.'.yml');
+        echo shell_exec('behat -c /tmp/'.$project.'_'.$env.'.yml');
 
         //Remove the file after tests have been run
         shell_exec('rm /tmp/'.$project.'_'.$env.'.yml');
