@@ -87,12 +87,28 @@ class Trigger extends Command {
       //Read in profiles.yml and projects.yml as arrays
       //Create yml parser
       $yaml = new Parser();
+      //Find the location of the .yml files and parse them as strings. Configs in home directory will overwrite any global configs in /etc/
       try {
-        //Read from file paths set in config.yml.
-          $config = $yaml->parse(file_get_contents(dirname(__FILE__) . '/../../../config.yml'));
+        if(file_exists($_SERVER['HOME'] . '/projects.yml')){
+          $projectsLocation = $_SERVER['HOME'] . '/projects.yml';
+        } else if (file_exists('/etc/projects.yml')){
+          $projectsLocation = '/etc/projects.yml';
+        } else{
           //If the paths aren't set by the user, they must be in the app directory.
+          //Read from file paths set in config.yml.
+          $config = $yaml->parse(file_get_contents(dirname(__FILE__) . '/../../../config.yml'));
           $projectsLocation = ($config['locations']['projects.yml'] === 'projects.yml' ? dirname(__FILE__)  . '/../../../projects.yml' : $config['locations']['projects.yml']);
+        }
+        if(file_exists($_SERVER['HOME'] . '/profiles.yml')){
+          $profilesLocation = $_SERVER['HOME'] . '/profiles.yml';
+        } else if (file_exists('/etc/profiles.yml')){
+          $profilesLocation = '/etc/profiles.yml';
+        } else{
+          //If the paths aren't set by the user, they must be in the app directory.
+          //Read from file paths set in config.yml.
+          $config = $yaml->parse(file_get_contents(dirname(__FILE__) . '/../../../config.yml'));
           $profilesLocation = ($config['locations']['profiles.yml'] === 'profiles.yml' ? dirname(__FILE__) . '/../../../profiles.yml' : $config['locations']['profiles.yml']);
+        }
           $projects = $yaml->parse(file_get_contents($projectsLocation));
           $profiles = $yaml->parse(file_get_contents($profilesLocation));
       } catch (ParseException $e) {
