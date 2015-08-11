@@ -1,0 +1,6 @@
+##Enter the file paths to projects.yml and profiles.yml. By default, they are located in the ~/.composer/vendor/knectar/behat-ci/ directory
+locations:
+  ##Will create the queue in specified directory by default if it does not exist. Leave out the .txt extension.
+  queue: /etc/bhqueue
+  projects.yml: ../projects.yml
+  profiles.yml: ../profiles.yml
