@@ -39,7 +39,7 @@ whitetest: #the overall project. uses the beanstalkapp mancine name
     - iPhone
 ```
 
-Note: by default, projects.yml, profiles.yml, bhqueue, and bhqueuelog are located in the behat-ci/ directory. If you wish to place them in a different location, use config.yml to specify their absolute paths.
+Note: by default, projects.yml, profiles.yml, bhqueue, and bhqueuelog are located in the behat-ci/ directory. Trigger will look for profiles.yml and projects.yml to be set up in /etc/ or in the user's home directory. Otherwise the absolute paths to the files must be set in config.yml so the command knows where to look.
 
 ## Usage
 For details on the commands in the console, simply run
