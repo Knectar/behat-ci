@@ -114,7 +114,7 @@ class Trigger extends Command {
       $this->matchAndTest($project, $env, $profiles, $projects);
     }
 
-    protected function matchAndTest($project, $env, $profiles, $projects){
+    protected function matchAndTest($project, $env, $profiles, $projects, OutputInterface $output){
       //Key-value matching variables in project to profile and then to the output yml
         $behatYaml = array();
         //Fill in the baseurl
@@ -128,7 +128,7 @@ class Trigger extends Command {
         foreach($profileList as $t){
           $behatYaml[$t] = $profiles[$t];
         }
-        
+
         //Create the yml dumper to convert the array to string
         $dumper = new Dumper();
         //Dump into yaml string
