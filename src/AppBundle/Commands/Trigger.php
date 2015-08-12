@@ -29,7 +29,6 @@ class Trigger extends Command {
       $error_style = new OutputFormatterStyle('white', 'red', array('bold'));
       $output->getFormatter()->setStyle('header', $header_style);
       $output->getFormatter()->setStyle('err', $error_style);
-      $output->writeln('Trigger request received');
       //Create yml parser
       $yaml = new Parser();
       try{
