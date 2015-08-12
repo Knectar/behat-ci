@@ -29,10 +29,7 @@ class Test extends Trigger {
     //executes code when command is called
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $header_style = new OutputFormatterStyle('white', 'green', array('bold'));
-        $error_style = new OutputFormatterStyle('white', 'red', array('bold'));
-        $output->getFormatter()->setStyle('header', $header_style);
-        $output->getFormatter()->setStyle('err', $error_style);
+        $this->formatOutput($output);
         $p=$input->getArgument('project_name');
         $e=$input->getOption('e');
         //Make sure the input is a proper environment
