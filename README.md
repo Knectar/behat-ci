@@ -3,7 +3,7 @@ behat-ci
 
 
 ## Introduction
-Behat Test Automator is an efficient way to have behat testing run automatically when a project is updated. It will also generate a custom behat.yml configuration file for you. All you have to do is specify the profiles.
+Behat continuous integration CLI is an efficient way to have behat testing run automatically when a project is updated. It will also generate a custom behat.yml configuration file for you. All you have to do is specify the profiles. With the 'bh test' command, you can also run tests manually against any project from any directory on the server.
 
 ## System requirements
 * git
