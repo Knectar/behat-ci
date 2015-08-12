@@ -58,4 +58,4 @@ Is meant to be called periodically (every minute) by cron on the server. It chec
 To run tests manually, run
 
     bh test
-with the same input arguments as bh schedule 
+with the same input arguments as bh schedule
