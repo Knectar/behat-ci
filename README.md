@@ -54,3 +54,7 @@ Will be called when changes are pushed. This command updates bhqueue.txt, which 
 
     bh trigger
 Is meant to be called periodically (every minute) by cron on the server. It checks bhqueue to see if a change has been made in the project and if testing needs to be done. If a new behat.yml configuration file is needed, it will read in the profiles from bhqueue and grab the necessary variables from the environments.yml to generate the profiles in a new configuration file and then run the testing command on the server.
+
+To run tests manually, run
+    bh test
+with the same input as bh schedule (<projectname> --e=<environmentname>)
