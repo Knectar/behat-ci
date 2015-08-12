@@ -87,10 +87,10 @@ class Trigger extends Command {
       //Create yml parser
       $yaml = new Parser();
       //Find the location of the .yml files and parse them as strings. Configs in home directory will overwrite any global configs in /etc/
+      if(!file_exists('/etc/behat-ci')){
+        echo shell_exec('mkdir -p /etc/behat-ci/');
+      }
       try {
-        if(!file_exists('/etc/behat-ci'){
-          echo shell_exec('mkdir -p /etc/behat-ci/');
-        }
         if(file_exists($_SERVER['HOME'] . '/projects.yml')){
           $projectsLocation = $_SERVER['HOME'] . '/projects.yml';
         } else if (file_exists('/etc/behat-ci/projects.yml')){
