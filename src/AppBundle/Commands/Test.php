@@ -42,10 +42,10 @@ class Test extends Trigger {
         } else {
           if($e == 'all'){
               //generates/runs tests for both dev and prod
-              $this->bhGen($p, 'dev', $output);
-              $this->bhGen($p, 'production', $output);
+              $this->bhTrigger($p, 'dev', $output);
+              $this->bhTrigger($p, 'production', $output);
           }else{
-              $this->bhGen($p, $e, $output);
+              $this->bhTrigger($p, $e, $output);
           }
         }
       }

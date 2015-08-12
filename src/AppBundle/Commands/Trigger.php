@@ -44,10 +44,10 @@ class Trigger extends Command {
         foreach($projectList as $p => $e){
           if($e == 'all'){
               //generates/runs tests for both dev and prod
-              $this->bhGen($p, 'dev', $output);
-              $this->bhGen($p, 'production', $output);
+              $this->bhTrigger($p, 'dev', $output);
+              $this->bhTrigger($p, 'production', $output);
           }else{
-              $this->bhGen($p, $e, $output);
+              $this->bhTrigger($p, $e, $output);
           }
         }
         //Write the scheduled tests to the log, remove from queue
@@ -80,7 +80,7 @@ class Trigger extends Command {
     }
 
     //Generates a yml configuration using projects.yml and profiles.yml file given a project and environment
-    protected function bhGen($project, $env, OutputInterface $output){
+    protected function bhTrigger($project, $env, OutputInterface $output){
       //Create the yml dumper to convert the array to string
       $dumper = new Dumper();
       //Read in profiles.yml and projects.yml as arrays
@@ -116,7 +116,11 @@ class Trigger extends Command {
       } catch (ParseException $e) {
           printf("Unable to parse the YAML string: %s", $e->getMessage());
       }
+      //Generate the .yml config and run the tests
+      $this->matchAndTest($profiles, $projects);
+    }
 
+    protected function matchAndTest($profiles, $projects){
       //Key-value matching variables in project to profile and then to the output yml
         $behatYaml = array();
         //Fill in the baseurl
@@ -143,6 +147,5 @@ class Trigger extends Command {
 
         //Remove the file after tests have been run
         shell_exec('rm /tmp/'.$project.'_'.$env.'.yml');
-
     }
   }
