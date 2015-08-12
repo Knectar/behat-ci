@@ -113,7 +113,7 @@ class Trigger extends Command {
           printf("Unable to parse the YAML string: %s", $e->getMessage());
       }
       //Generate the .yml config and run the tests
-      $this->matchAndTest($profiles, $projects, $projects);
+      $this->matchAndTest($profiles, $projects, $project);
     }
 
     protected function matchAndTest($profiles, $project, $projects){
