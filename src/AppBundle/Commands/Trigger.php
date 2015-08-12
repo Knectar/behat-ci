@@ -24,11 +24,7 @@ class Trigger extends Command {
     //executes code when command is called
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-      //Formatting terminal output
-      $header_style = new OutputFormatterStyle('white', 'green', array('bold'));
-      $error_style = new OutputFormatterStyle('white', 'red', array('bold'));
-      $output->getFormatter()->setStyle('header', $header_style);
-      $output->getFormatter()->setStyle('err', $error_style);
+      $this->formatOutput($output);
       //Create yml parser
       $yaml = new Parser();
       try{
@@ -147,5 +143,13 @@ class Trigger extends Command {
 
         //Remove the file after tests have been run
         shell_exec('rm /tmp/'.$project.'_'.$env.'.yml');
+    }
+
+    protected function formatOutput($output){
+      //Formatting terminal output
+      $header_style = new OutputFormatterStyle('white', 'green', array('bold'));
+      $error_style = new OutputFormatterStyle('white', 'red', array('bold'));
+      $output->getFormatter()->setStyle('header', $header_style);
+      $output->getFormatter()->setStyle('err', $error_style);
     }
   }
