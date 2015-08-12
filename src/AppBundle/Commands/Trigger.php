@@ -77,8 +77,6 @@ class Trigger extends Command {
 
     //Generates a yml configuration using projects.yml and profiles.yml file given a project and environment
     protected function bhTrigger($project, $env, OutputInterface $output){
-      //Create the yml dumper to convert the array to string
-      $dumper = new Dumper();
       //Read in profiles.yml and projects.yml as arrays
       //Create yml parser
       $yaml = new Parser();
@@ -130,7 +128,9 @@ class Trigger extends Command {
         foreach($profileList as $t){
           $behatYaml[$t] = $profiles[$t];
         }
-
+        
+        //Create the yml dumper to convert the array to string
+        $dumper = new Dumper();
         //Dump into yaml string
         $behatYamlString = $dumper->dump($behatYaml, 7);
 
