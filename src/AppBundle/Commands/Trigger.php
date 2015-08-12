@@ -145,7 +145,7 @@ class Trigger extends Command {
         shell_exec('rm /tmp/'.$project.'_'.$env.'.yml');
     }
 
-    protected function formatOutput($output){
+    protected function formatOutput(OutputInterface $output){
       //Formatting terminal output
       $header_style = new OutputFormatterStyle('white', 'green', array('bold'));
       $error_style = new OutputFormatterStyle('white', 'red', array('bold'));
