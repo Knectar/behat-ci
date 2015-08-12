@@ -27,7 +27,7 @@ android:
     Behat\MinkExtension\Extension:
       selenium2:
         browser: android
-        wd_host: 
+        wd_host:
         capabilities: { platform:Linux,version:4}
 
 iPhone:
@@ -37,5 +37,5 @@ iPhone:
     Behat\MinkExtension\Extension:
       selenium2:
         browser: iphone
-        wd_host: 
+        wd_host:
         capabilities: { platform:Mac 10.,version: 6}
