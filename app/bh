@@ -1,10 +1,5 @@
 #!/usr/bin/env php
 <?php
-
-// if you don't want to setup permissions the proper way, just uncomment the following PHP line
-// read http://symfony.com/doc/current/book/installation.html#configuration-and-setup for more information
-//umask(0000);
-
 set_time_limit(0);
 //include composer autoloader
 require_once __DIR__ . '/../vendor/autoload.php';
@@ -19,6 +14,7 @@ use AppBundle\Commands\Help;
 use AppBundle\Commands\Schedule;
 use AppBundle\Commands\Trigger;
 use AppBundle\Commands\Clear;
+use AppBundle\Commands\Test;
 
 $input = new ArgvInput();
 $env = $input->getParameterOption(array('--env', '-e'), getenv('SYMFONY_ENV') ?: 'dev');
@@ -35,4 +31,5 @@ $application->add(new Help());
 $application->add(new Schedule());
 $application->add(new Trigger());
 $application->add(new Clear());
+$application->add(new Test());
 $application->run($input);
