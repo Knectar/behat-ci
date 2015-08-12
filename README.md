@@ -1,4 +1,4 @@
-Behat Test Automator
+behat-ci
 ================
 
 
