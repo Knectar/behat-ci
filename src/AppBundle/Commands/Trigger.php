@@ -138,7 +138,7 @@ class Trigger extends Command {
         file_put_contents('/tmp/'.$project.'_'.$env.'.yml', $behatYamlString);
         $output->writeln('<header>Generated config file for '.$project.' for env '.$env.' in /tmp</header>');
         if($test){
-          test($project, $env, $profile, $profileList);
+          $this->test($project, $env, $profile, $profileList);
         }
     }
 
