@@ -33,7 +33,7 @@ class Schedule extends Command {
         //Make sure the input is a proper environment
         if($e!='all' && $e!='dev' && $e!='production'){
           $output->writeln('<error>Please enter a valid environment! (dev, production, all)<error>');
-          return 1;
+          return false;
         } else {
           try{
             //Create the yaml parser
@@ -50,7 +50,7 @@ class Schedule extends Command {
           fwrite($newQueueTestOnly, "Test scheduled on: " . date("D M j G:i:s") . " for project:" . $projName ." on environment:".$e."\n");
           $output->writeln('Schedule request received');
           fclose($newQueueTestOnly);
-          return 0;
+          return true;
         }
       }
     }
