@@ -18,14 +18,14 @@ class Test extends Trigger {
       $this->setName('tests')
            ->setDescription("Used to run tests manually. Instead of scheduling and triggering tests with beanstalk post-deploy commands and cron, 'bh test' can be run to generate a .yml config and run tests for the project and environments given.")
            ->addArgument('project_name', InputArgument::REQUIRED, "The name of the project repo (%REPO_NAME% in Beanstalk post-deployment)")
-           ->addOption('e',
-                        null,
+           ->addOption('environments',
+                        'e',
                         InputOption::VALUE_OPTIONAL,
                         'Environment. use --e=all for both dev and production',
                         1
                       )
-           ->addOption('p',
-                       null,
+           ->addOption('profile',
+                       'p',
                        InputOption::VALUE_OPTIONAL,
                        'Environment. use --e=all for both dev and production',
                        1
@@ -37,8 +37,8 @@ class Test extends Trigger {
     {
         $this->formatOutput($output);
         $p=$input->getArgument('project_name');
-        $e=$input->getOption('e');
-        $profile=$input->getOption('p');
+        $e=$input->getOption('environments');
+        $profile=$input->getOption('profile');
         //Make sure the input is a proper environment
         if($e!='all' && $e!='dev' && $e!='production'){
           $output->writeln('<error>Please enter a valid environment! (dev, production, all)<error>');
@@ -52,7 +52,7 @@ class Test extends Trigger {
               $this->bhTrigger($p, $e, NULL, $output);
           }
         }
-        if($profile!=NULL){
+        if(!$profile){
           $this->bhTrigger($p, $e, $profile, $output);
         }
       }
