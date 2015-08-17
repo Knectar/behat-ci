@@ -28,7 +28,7 @@ class Test extends Trigger {
                        'p',
                        InputOption::VALUE_OPTIONAL,
                        'Profile',
-                       1
+                       null
                       )
            ->addOption('generate',
                        'g',
