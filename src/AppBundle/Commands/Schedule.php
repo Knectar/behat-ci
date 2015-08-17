@@ -29,7 +29,7 @@ class Schedule extends Command {
     //executes code when command is called
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $e=$input->getOption('e');
+        $e=$input->getOption('branch');
         //Make sure the input is a proper environment
         if($e!='all' && $e!='dev' && $e!='production'){
           $output->writeln('<error>Please enter a valid environment! (dev, production, all)<error>');
