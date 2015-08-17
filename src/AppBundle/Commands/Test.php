@@ -37,7 +37,7 @@ class Test extends Trigger {
     {
         $this->formatOutput($output);
         $p=$input->getArgument('project_name');
-        $e=$input->getOption('environments');
+        $e=$input->getOption('branch');
         $profile=$input->getOption('profile');
         //Make sure the input is a proper environment
         if($e!='all' && $e!='dev' && $e!='production'){
