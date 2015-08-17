@@ -37,23 +37,24 @@ class Test extends Trigger {
     {
         $this->formatOutput($output);
         $p=$input->getArgument('project_name');
-        $e=$input->getOption('branch');
+        $b=$input->getOption('branch');
         $profile=$input->getOption('profile');
         //Make sure the input is a proper environment
-        if($e!='all' && $e!='dev' && $e!='production'){
+        if($b!='all' && $b!='dev' && $b!='production'){
           $output->writeln('<error>Please enter a valid environment! (dev, production, all)<error>');
-          return 1;
-        } else {
-          if($e == 'all'){
-              //generates/runs tests for both dev and prod
-              $this->bhTrigger($p, 'dev', NULL, $output);
-              $this->bhTrigger($p, 'production', NULL, $output);
-          }else{
-              $this->bhTrigger($p, $e, NULL, $output);
+          $output->writeln($profile);
+          if(!$profile){
+            $this->bhTrigger($p, $e, $profile, $output);
+          } else {
+              if($e == 'all'){
+                  //generates/runs tests for both dev and prod
+                  $this->bhTrigger($p, 'dev', NULL, $output);
+                  $this->bhTrigger($p, 'production', NULL, $output);
+              }else{
+                  $this->bhTrigger($p, $e, NULL, $output);
+              }
           }
-        }
-        if(!$profile){
-          $this->bhTrigger($p, $e, $profile, $output);
+          return 1;
         }
       }
     }
