@@ -21,7 +21,7 @@ class Schedule extends Command {
            ->addOption('branch',
                         'b',
                         InputOption::VALUE_OPTIONAL,
-                        'Environment. use --e=all for both dev and production',
+                        'The environment/branch. use --branch=all for both dev and production',
                         1
                       );
       }
