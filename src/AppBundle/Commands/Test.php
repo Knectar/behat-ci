@@ -35,7 +35,6 @@ class Test extends Trigger {
                        InputOption::VALUE_NONE,
                        'If set, will generate a behat .yml config file in /tmp/ but will NOT run tests and delete the file.'
                      );
-
       }
 
     //executes code when command is called

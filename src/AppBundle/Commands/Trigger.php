@@ -33,7 +33,7 @@ class Trigger extends Command {
         $bhQ = $config['locations']['queue'];
       } catch (ParseException $e) {
           printf("Unable to parse the YAML string: %s", $e->getMessage());
-          return 1;
+          return false;
       }
       //Check if there are tests scheduled, i.e., queue file is not empty
       if (file_get_contents($bhQ.'.txt') != ''){
@@ -50,7 +50,7 @@ class Trigger extends Command {
         //Write the scheduled tests to the log, remove from queue
         file_put_contents($bhQ.'log.txt', file_get_contents($bhQ.'.txt'), FILE_APPEND);
         file_put_contents($bhQ.'.txt', "");
-        return 0;
+        return true;
       }
 
     }
