@@ -100,7 +100,7 @@ class Trigger extends Command {
           $profilesLocation = $_SERVER['HOME'] . '/profiles.yml';
         } else if (file_exists('/etc/behat-ci/profiles.yml')){
           $profilesLocation = '/etc/behat-ci/profiles.yml';
-        } else{
+        } else {
           //If the paths aren't set by the user, they must be in the app directory.
           //Read from file paths set in config.yml.
           $config = $yaml->parse(file_get_contents(dirname(__FILE__) . '/../../../config.yml'));

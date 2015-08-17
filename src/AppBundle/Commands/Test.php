@@ -38,7 +38,7 @@ class Test extends Trigger {
         $this->formatOutput($output);
         $p=$input->getArgument('project_name');
         $e=$input->getOption('e');
-        $profile=$input->getOption($profile);
+        $profile=$input->getOption('p');
         //Make sure the input is a proper environment
         if($e!='all' && $e!='dev' && $e!='production'){
           $output->writeln('<error>Please enter a valid environment! (dev, production, all)<error>');
