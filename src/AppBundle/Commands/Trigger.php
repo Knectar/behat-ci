@@ -77,7 +77,7 @@ class Trigger extends Command {
     }
 
     //Generates a yml configuration using projects.yml and profiles.yml file given a project and environment
-    protected function bhTrigger($project, $env, $profile, OutputInterface $output){
+    protected function bhTrigger($project, $env, $profile, OutputInterface $output, $test='true'){
       //Read in profiles.yml and projects.yml as arrays
       //Create yml parser
       $yaml = new Parser();
@@ -112,10 +112,10 @@ class Trigger extends Command {
           printf("Unable to parse the YAML string: %s", $e->getMessage());
       }
       //Generate the .yml config and run the tests
-      $this->matchAndTest($project, $env, $profile, $profiles, $projects, $output);
+      $this->generate($project, $env, $profile, $profiles, $projects, $output, true);
     }
 
-    protected function matchAndTest($project, $env, $profile, $profiles, $projects, OutputInterface $output){
+    protected function generate($project, $env, $profile, $profiles, $projects, OutputInterface $output, $test){
       //Key-value matching variables in project to profile and then to the output yml
         $behatYaml = array();
         //Fill in the baseurl
@@ -129,7 +129,6 @@ class Trigger extends Command {
         foreach($profileList as $t){
           $behatYaml[$t] = $profiles[$t];
         }
-
         //Create the yml dumper to convert the array to string
         $dumper = new Dumper();
         //Dump into yaml string
@@ -138,22 +137,27 @@ class Trigger extends Command {
         //create the yml file in /tmp
         file_put_contents('/tmp/'.$project.'_'.$env.'.yml', $behatYamlString);
         $output->writeln('<header>Generated config file for '.$project.' for env '.$env.' in /tmp</header>');
-
-        //Run the behat testing command.
-        echo shell_exec('behat -c /tmp/'.$project.'_'.$env.'.yml');
-        //Run test on a single profile if specified
-        if($profile){
-            if(!shell_exec('behat -p '.$profile)){
-              $output->writeln('<error>'.$profile.' is not a valid profile.</error>');
-              return 1;
-            }
-        } else { //else run all the profiles
-          foreach($profileList as $r){
-            shell_exec('behat -p '.$r);
-          }
+        if($test){
+          test($project, $env, $profile, $profileList);
         }
-        //Remove the file after tests have been run
-        shell_exec('rm /tmp/'.$project.'_'.$env.'.yml');
+    }
+
+    protected function test($project, $env, $profile, $profileList){
+              //Run the behat testing command.
+              echo shell_exec('behat -c /tmp/'.$project.'_'.$env.'.yml');
+              //Run test on a single profile if specified
+              if($profile){
+                  if(!shell_exec('behat -p '.$profile)){
+                    $output->writeln('<error>'.$profile.' is not a valid profile.</error>');
+                    return 1;
+                  }
+              } else { //else run all the profiles
+                foreach($profileList as $r){
+                  shell_exec('behat -p '.$r);
+                }
+              }
+              //Remove the file after tests have been run
+              shell_exec('rm /tmp/'.$project.'_'.$env.'.yml');
     }
 
     protected function formatOutput(OutputInterface $output){
