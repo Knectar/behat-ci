@@ -18,13 +18,13 @@ class Test extends Trigger {
       $this->setName('tests')
            ->setDescription("Used to run tests manually. Instead of scheduling and triggering tests with beanstalk post-deploy commands and cron, 'bh test' can be run to generate a .yml config and run tests for the project and environments given.")
            ->addArgument('project_name', InputArgument::REQUIRED, "The name of the project repo (%REPO_NAME% in Beanstalk post-deployment)")
-           ->addOption('environment',
+           ->addOption('e',
                         null,
                         InputOption::VALUE_OPTIONAL,
                         'Environment. use --e=all for both dev and production',
                         1
                       )
-           ->addOption('profile',
+           ->addOption('p',
                        null,
                        InputOption::VALUE_OPTIONAL,
                        'Environment. use --e=all for both dev and production',
