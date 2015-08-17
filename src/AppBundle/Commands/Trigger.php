@@ -138,11 +138,11 @@ class Trigger extends Command {
         file_put_contents('/tmp/'.$project.'_'.$env.'.yml', $behatYamlString);
         $output->writeln('<header>Generated config file for '.$project.' for env '.$env.' in /tmp</header>');
         if($test){
-          $this->test($project, $env, $profile, $profileList);
+          $this->test($project, $env, $profile, $profileList, $output);
         }
     }
 
-    protected function test($project, $env, $profile, $profileList){
+    protected function test($project, $env, $profile, $profileList, $output){
               //Run the behat testing command.
               echo shell_exec('behat -c /tmp/'.$project.'_'.$env.'.yml');
               //Run test on a single profile if specified
