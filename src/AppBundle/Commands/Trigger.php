@@ -143,7 +143,7 @@ class Trigger extends Command {
         echo shell_exec('behat -c /tmp/'.$project.'_'.$env.'.yml');
         //Run test on a single profile if specified
         if($profile){
-            if(!shell_exec('behat -p '.$profile){
+            if(!shell_exec('behat -p '.$profile)){
               $output->writeln('<error>'.$profile.' is not a valid profile.</error>');
               return 1;
             }
