@@ -29,7 +29,14 @@ class Test extends Trigger {
                        InputOption::VALUE_OPTIONAL,
                        'Profile',
                        1
-                      );
+                      )
+           ->addOption('generate',
+                       'g',
+                       InputOption::VALUE_NONE,
+                       'If set, will generate a behat .yml config file in /tmp/ but will NOT run tests and delete the file.',
+                       null
+                     );
+
       }
 
     //executes code when command is called
@@ -39,12 +46,13 @@ class Test extends Trigger {
         $p=$input->getArgument('project_name');
         $b=$input->getOption('branch');
         $profile=$input->getOption('profile');
-        $output->writeln('profile: '.$profile);
         //Make sure the input is a proper environment
         if($b!='all' && $b!='dev' && $b!='production'){
           $output->writeln('<error>Please enter a valid environment! (dev, production, all)<error>');
+        } else if ($input->getOption('generate')){
+          $this->bhTrigger($p, $b, NULL, $output, false);
         } else {
-          if($profile!=1){
+          if($input->getOption('profile')){
             $this->bhTrigger($p, $b, $profile, $output);
           } else {
               if($b == 'all'){
