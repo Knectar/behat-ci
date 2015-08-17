@@ -49,16 +49,17 @@ class Test extends Trigger {
         if($b!='all' && $b!='dev' && $b!='production'){
           $output->writeln('<error>Please enter a valid environment! (dev, production, all)<error>');
         } else if ($input->getOption('generate')){
+          echo 'gennnnnnnn';
           $this->bhTrigger($p, $b, NULL, $output, false);
         } else {
-          if($input->getOption('profile')){
+          if($profile){
             $this->bhTrigger($p, $b, $profile, $output);
           } else {
               if($b == 'all'){
                   //generates/runs tests for both dev and prod
                   $this->bhTrigger($p, 'dev', NULL, $output);
                   $this->bhTrigger($p, 'production', NULL, $output);
-              } else{
+              } else {
                   $this->bhTrigger($p, $b, NULL, $output);
               }
           }
