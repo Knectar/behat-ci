@@ -44,7 +44,7 @@ class Test extends Trigger {
         if($b!='all' && $b!='dev' && $b!='production'){
           $output->writeln('<error>Please enter a valid environment! (dev, production, all)<error>');
         } else {
-          if($profile!==1){
+          if($profile!=1){
             $this->bhTrigger($p, $b, $profile, $output);
           } else {
               if($b == 'all'){
