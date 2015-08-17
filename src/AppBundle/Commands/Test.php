@@ -33,8 +33,7 @@ class Test extends Trigger {
            ->addOption('generate',
                        'g',
                        InputOption::VALUE_NONE,
-                       'If set, will generate a behat .yml config file in /tmp/ but will NOT run tests and delete the file.',
-                       null
+                       'If set, will generate a behat .yml config file in /tmp/ but will NOT run tests and delete the file.'
                      );
 
       }
