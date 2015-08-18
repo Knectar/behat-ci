@@ -148,7 +148,11 @@ class Trigger extends ContainerAwareCommand {
 
         //create the yml file in /tmp
         file_put_contents('/tmp/'.$project.'_'.$env.'.yml', $behatYamlString);
-        $this->getLogger()->info('Generated the file /tmp/'.$project.'_'.$env.'.yml');
+        if(file_exists('/tmp/'.$project.'_'.$env.'.yml')){
+          $this->getLogger()->info('Generated the file /tmp/'.$project.'_'.$env.'.yml');
+        } else {
+          $this->getLogger()->info('FAILED to generate the file /tmp/'.$project.'_'.$env.'.yml');
+        }
         $output->writeln('<header>Generated config file for '.$project.' for env '.$env.' in /tmp</header>');
         if($test){
           $this->test($project, $env, $profile, $profileList, $output);
