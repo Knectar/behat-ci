@@ -80,7 +80,7 @@ class Trigger extends ContainerAwareCommand {
     }
 
     //Generates a yml configuration using projects.yml and profiles.yml file given a project and environment
-    protected function bhTrigger($project, $env, $profile, OutputInterface $output, $test='true'){
+    protected function bhTrigger($project, $env, $profile, OutputInterface $output, $test=true){
       //Read in profiles.yml and projects.yml as arrays
       //Create yml parser
       $yaml = new Parser();
