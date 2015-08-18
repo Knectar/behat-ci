@@ -156,18 +156,18 @@ class Trigger extends ContainerAwareCommand {
 
     protected function test($project, $env, $profile, $profileList, $output){
               //Run the behat testing command.
-              $this->getLogger()->info(shell_exec('behat -c /tmp/'.$project.'_'.$env.'.yml'));
+              $this->getLogger()->info(shell_exec('behat -c /tmp/'.$project.'_'.$env.'.yml --format junit'));
               //Run test on a single profile if specified
               if($profile){
                   $this->getLogger()->info('Running tests on '.$r.' for '.$project);
-                  if(!shell_exec('behat -c /tmp/'.$project.'_'.$env.'.yml -p '.$profile)){
+                  if(!shell_exec('behat -c /tmp/'.$project.'_'.$env.'.yml -p '.$profile.' --format failed')){
                     $output->writeln('<error>'.$profile.' is not a valid profile.</error>');
                     $this->getLogger()->error($profile.' is not a valid profile.');
                   }
               } else { //else run all the profiles
                 foreach($profileList as $r){
                   $this->getLogger()->info('Running tests on '.$r.' for '.$project.'...');
-                  $this->getLogger()->info(shell_exec('behat -c /tmp/'.$project.'_'.$env.'.yml -p '.$r));
+                  $this->getLogger()->info(shell_exec('behat -c /tmp/'.$project.'_'.$env.'.yml -p '.$r.' --format failed'));
                 }
               }
               //Remove the file after tests have been run
