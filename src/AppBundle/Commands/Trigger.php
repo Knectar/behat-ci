@@ -183,4 +183,5 @@ class Trigger extends ContainerAwareCommand {
       $output->getFormatter()->setStyle('header', $header_style);
       $output->getFormatter()->setStyle('err', $error_style);
     }
+    
   }
