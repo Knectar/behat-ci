@@ -28,6 +28,7 @@ class Trigger extends ContainerAwareCommand {
     //executes code when command is called
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+      $this->getLogger()->debug('Trigger called');
       $this->formatOutput($output);
       //Create yml parser
       $yaml = new Parser();
