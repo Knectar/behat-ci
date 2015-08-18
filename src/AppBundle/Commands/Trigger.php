@@ -156,7 +156,8 @@ class Trigger extends ContainerAwareCommand {
 
     protected function test($project, $env, $profile, $profileList, $output){
               //Run the behat testing command.
-              $this->getLogger()->info(shell_exec('behat -c /tmp/'.$project.'_'.$env.'.yml --format junit'));
+              echo shell_exec('behat -c /tmp/'.$project.'_'.$env.'.yml');
+              $this->getLogger()->info(shell_exec('behat -c /tmp/'.$project.'_'.$env.'.yml'));
               //Run test on a single profile if specified
               if($profile){
                   $this->getLogger()->info('Running tests on '.$r.' for '.$project);
