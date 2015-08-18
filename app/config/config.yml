@@ -83,7 +83,7 @@ monolog:
     handlers:
         applog:
             type: stream
-            path: /etc/bhqueue.log
+            path: /etc/bh.log
             level: debug
         main:
             type: fingers_crossed
