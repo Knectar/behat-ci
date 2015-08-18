@@ -31,7 +31,7 @@ class Clear extends Command {
       file_put_contents('/etc/bhqueue.txt', "");
       $output->writeln('Queue Cleared');
       if ($input->getOption('log')) {
-        file_put_contents('/etc/bhqueue.log', "");
+        file_put_contents('/etc/bh.log', "");
         $output->writeln('Queue Log Cleared');
        }
       return 0;
