@@ -2,7 +2,7 @@
 
 namespace AppBundle\Commands;
 
-use Symfony\Component\Console\Command\Command;
+use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputArgument;
@@ -10,8 +10,9 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 use Symfony\Component\Yaml\Parser;
 use Symfony\Component\Yaml\Exception\ParseException;
+use Psr\Log\LoggerInterface;
 
-class Schedule extends Command {
+class Schedule extends ContainerAwareCommand {
    //configuration of the command's name, arguments, options, etc
     protected function configure()
     {
@@ -29,6 +30,8 @@ class Schedule extends Command {
     //executes code when command is called
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $logger = $this->getContainer()->get('logger');
+
         $e=$input->getOption('branch');
         //Make sure the input is a proper environment
         if($e!='all' && $e!='dev' && $e!='production'){
@@ -42,12 +45,14 @@ class Schedule extends Command {
             $config = $yaml->parse(file_get_contents(dirname(__FILE__) . '/../../../config.yml'));
             $bhQ = $config['locations']['queue'];
           } catch (ParseException $e) {
+              $logger->error("Unable to parse the YAML string: %s");
               printf("Unable to parse the YAML string: %s", $e->getMessage());
           }
           //write timestamp, project name, instance to queue.
           $projName = $input->getArgument('repo_name');
           $newQueueTestOnly = fopen($bhQ.'.txt', "a") or die("Unable to open file!");
           fwrite($newQueueTestOnly, "Test scheduled on: " . date("D M j G:i:s") . " for project:" . $projName ." on environment:".$e."\n");
+          $logger->info('Queued Tests for '.$projName.' on branch '.$e);
           $output->writeln('Schedule request received');
           fclose($newQueueTestOnly);
           return true;
