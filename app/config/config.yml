@@ -84,7 +84,7 @@ monolog:
         applog:
             type: stream
             path: /etc/bhqueue.log
-            level: info
+            level: debug
         main:
             type: fingers_crossed
             action_level: warning
