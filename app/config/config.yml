@@ -83,7 +83,7 @@ monolog:
     handlers:
         applog:
             type: stream
-            path: /var/logs/behat-ci.log
+            path: /var/log/behat-ci.log
             level: debug
         main:
             type: fingers_crossed
