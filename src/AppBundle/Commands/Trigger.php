@@ -2,7 +2,7 @@
 
 namespace AppBundle\Commands;
 
-use Symfony\Component\Console\Command\Command;
+use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputArgument;
@@ -12,9 +12,13 @@ use Symfony\Component\Yaml\Parser;
 use Symfony\Component\Yaml\Exception\ParseException;
 use Symfony\Component\Yaml\Dumper;
 
-class Trigger extends Command {
-
+class Trigger extends ContainerAwareCommand {
    //configuration of the command's name, arguments, options, etc
+    protected function getLogger(){
+      $logger = $this->getContainer()->get('logger');
+      return $logger;
+    }
+
     protected function configure()
     {
       $this->setName('trigger')
@@ -47,8 +51,7 @@ class Trigger extends Command {
               $this->bhTrigger($p, $e, NULL, $output);
           }
         }
-        //Write the scheduled tests to the log, remove from queue
-        file_put_contents($bhQ.'log.txt', file_get_contents($bhQ.'.txt'), FILE_APPEND);
+        //Removed scheduled tests from queue
         file_put_contents($bhQ.'.txt', "");
         return true;
       }
@@ -83,32 +86,40 @@ class Trigger extends Command {
       $yaml = new Parser();
       //Find the location of the .yml files and parse them as strings. Configs in home directory will overwrite any global configs in /etc/
       if(!file_exists('/etc/behat-ci')){
-        echo shell_exec('mkdir -p /etc/behat-ci/');
+        $this->getLogger()->debug('Creating directory etc/behat-ci/');
+        $this->getLogger()->debug(shell_exec('mkdir -p /etc/behat-ci/'));
       }
       try {
         if(file_exists($_SERVER['HOME'] . '/projects.yml')){
+          $this->getLogger()->debug('Found projects.yml in '.$_SERVER['HOME']);
           $projectsLocation = $_SERVER['HOME'] . '/projects.yml';
         } else if (file_exists('/etc/behat-ci/projects.yml')){
+          $this->getLogger()->debug('Found projects.yml in /etc/behat-ci/');
           $projectsLocation = '/etc/behat-ci/projects.yml';
         } else{
           //If the paths aren't set by the user, they must be in the app directory.
           //Read from file paths set in config.yml.
           $config = $yaml->parse(file_get_contents(dirname(__FILE__) . '/../../../config.yml'));
           $projectsLocation = ($config['locations']['projects.yml'] === 'projects.yml' ? dirname(__FILE__)  . '/../../../projects.yml' : $config['locations']['projects.yml']);
+          $this->getLogger()->debug('projects.yml found in '.$projectsLocation.' per config.yml');
         }
         if(file_exists($_SERVER['HOME'] . '/profiles.yml')){
+          $this->getLogger()->debug('Found profiles.yml in '.$_SERVER['HOME']);
           $profilesLocation = $_SERVER['HOME'] . '/profiles.yml';
         } else if (file_exists('/etc/behat-ci/profiles.yml')){
+          $this->getLogger()->debug('Found profiles.yml in /etc/behat-ci/');
           $profilesLocation = '/etc/behat-ci/profiles.yml';
         } else {
           //If the paths aren't set by the user, they must be in the app directory.
           //Read from file paths set in config.yml.
           $config = $yaml->parse(file_get_contents(dirname(__FILE__) . '/../../../config.yml'));
           $profilesLocation = ($config['locations']['profiles.yml'] === 'profiles.yml' ? dirname(__FILE__) . '/../../../profiles.yml' : $config['locations']['profiles.yml']);
+          $this->getLogger()->debug('profiles.yml found in '.$projectsLocation.' per config.yml');
         }
           $projects = $yaml->parse(file_get_contents($projectsLocation));
           $profiles = $yaml->parse(file_get_contents($profilesLocation));
       } catch (ParseException $e) {
+          $this->getLogger()->error("Unable to parse the YAML string: %s");
           printf("Unable to parse the YAML string: %s", $e->getMessage());
       }
       //Generate the .yml config and run the tests
@@ -136,6 +147,7 @@ class Trigger extends Command {
 
         //create the yml file in /tmp
         file_put_contents('/tmp/'.$project.'_'.$env.'.yml', $behatYamlString);
+        $this->getLogger()->info('Generated the file /tmp/'.$project.'_'.$env.'.yml');
         $output->writeln('<header>Generated config file for '.$project.' for env '.$env.' in /tmp</header>');
         if($test){
           $this->test($project, $env, $profile, $profileList, $output);
@@ -144,15 +156,18 @@ class Trigger extends Command {
 
     protected function test($project, $env, $profile, $profileList, $output){
               //Run the behat testing command.
-              echo shell_exec('behat -c /tmp/'.$project.'_'.$env.'.yml');
+              $this->getLogger()->info(shell_exec('behat -c /tmp/'.$project.'_'.$env.'.yml'));
               //Run test on a single profile if specified
               if($profile){
+                  $this->getLogger()->info('Running tests on '.$r.' for '.$project);
                   if(!shell_exec('behat -c /tmp/'.$project.'_'.$env.'.yml -p '.$profile)){
                     $output->writeln('<error>'.$profile.' is not a valid profile.</error>');
+                    $this->getLogger()->error($profile.' is not a valid profile.');
                   }
               } else { //else run all the profiles
                 foreach($profileList as $r){
-                  shell_exec('behat -c /tmp/'.$project.'_'.$env.'.yml -p '.$r);
+                  $this->getLogger()->info('Running tests on '.$r.' for '.$project.'...');
+                  $this->getLogger()->info(shell_exec('behat -c /tmp/'.$project.'_'.$env.'.yml -p '.$r));
                 }
               }
               //Remove the file after tests have been run

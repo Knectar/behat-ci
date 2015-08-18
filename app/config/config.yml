@@ -78,3 +78,20 @@ swiftmailer:
     username:  "%mailer_user%"
     password:  "%mailer_password%"
     spool:     { type: memory }
+
+monolog:
+    handlers:
+        applog:
+            type: stream
+            path: /etc/bhqueue.log
+            level: info
+        main:
+            type: fingers_crossed
+            action_level: warning
+            handler: file
+        file:
+            type: stream
+            level: debug
+        syslog:
+            type: syslog
+            level: error
