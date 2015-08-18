@@ -42,6 +42,8 @@ class Trigger extends ContainerAwareCommand {
       }
       //Check if there are tests scheduled, i.e., queue file is not empty
       if (file_get_contents($bhQ.'.txt') != ''){
+        //Removed scheduled tests from queue
+        file_put_contents($bhQ.'.txt', "");
         $projectList = $this->readQueue($bhQ.'.txt');
         foreach($projectList as $p => $e){
           if($e == 'all'){
@@ -52,8 +54,6 @@ class Trigger extends ContainerAwareCommand {
               $this->bhTrigger($p, $e, NULL, $output);
           }
         }
-        //Removed scheduled tests from queue
-        file_put_contents($bhQ.'.txt', "");
         return true;
       }
 
@@ -183,5 +183,5 @@ class Trigger extends ContainerAwareCommand {
       $output->getFormatter()->setStyle('header', $header_style);
       $output->getFormatter()->setStyle('err', $error_style);
     }
-    
+
   }
