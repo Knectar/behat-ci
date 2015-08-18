@@ -42,9 +42,9 @@ class Trigger extends ContainerAwareCommand {
       }
       //Check if there are tests scheduled, i.e., queue file is not empty
       if (file_get_contents($bhQ.'.txt') != ''){
+        $projectList = $this->readQueue($bhQ.'.txt');
         //Removed scheduled tests from queue
         file_put_contents($bhQ.'.txt', "");
-        $projectList = $this->readQueue($bhQ.'.txt');
         foreach($projectList as $p => $e){
           if($e == 'all'){
               //generates/runs tests for both dev and prod
