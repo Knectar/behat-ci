@@ -20,7 +20,7 @@ class Clear extends Command {
               'log',
               null,
               InputOption::VALUE_NONE,
-              'If set, clears the log as well../'
+              'If set, clears the log as well.'
            );
       }
 
@@ -35,5 +35,6 @@ class Clear extends Command {
         $output->writeln('Queue Log Cleared');
        }
       return 0;
-      }
+    }
+
     }
