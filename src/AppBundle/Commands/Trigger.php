@@ -32,7 +32,7 @@ class Trigger extends ContainerAwareCommand {
       $this->formatOutput($output);
       //Create yml parser
       $yaml = new Parser();
-      try{
+      try {
         //read queue location from config.yml
         $config = $yaml->parse(file_get_contents(dirname(__FILE__) . '/../../../config.yml'));
         $bhQ = $config['locations']['queue'];
@@ -60,7 +60,8 @@ class Trigger extends ContainerAwareCommand {
     }
 
     //Forms a map array of projects => environments from the queue by parsing each line of the queue string
-    protected function readQueue($queue){
+    protected function readQueue($queue)
+    {
       $projectList = array();
       $file = fopen($queue, "r") or exit("Unable to open file!");
       while(!feof($file)){
@@ -81,7 +82,8 @@ class Trigger extends ContainerAwareCommand {
     }
 
     //Generates a yml configuration using projects.yml and profiles.yml file given a project and environment
-    protected function bhTrigger($project, $env, $profile, OutputInterface $output, $test=true){
+    protected function bhTrigger($project, $env, $profile, OutputInterface $output, $test=true)
+    {
       //Read in profiles.yml and projects.yml as arrays
       //Create yml parser
       $yaml = new Parser();
@@ -97,7 +99,7 @@ class Trigger extends ContainerAwareCommand {
         } else if (file_exists('/etc/behat-ci/projects.yml')){
           $this->getLogger()->debug('Found projects.yml in /etc/behat-ci/');
           $projectsLocation = '/etc/behat-ci/projects.yml';
-        } else{
+        } else {
           //If the paths aren't set by the user, they must be in the app directory.
           //Read from file paths set in config.yml.
           $config = $yaml->parse(file_get_contents(dirname(__FILE__) . '/../../../config.yml'));
@@ -127,60 +129,63 @@ class Trigger extends ContainerAwareCommand {
       $this->generate($project, $env, $profile, $profiles, $projects, $output, $test);
     }
 
-    protected function generate($project, $env, $profile, $profiles, $projects, OutputInterface $output, $test){
-      //Key-value matching variables in project to profile and then to the output yml
-        $behatYaml = array();
-        //Fill in the baseurl
-        $profiles['default']['extensions']['Behat\MinkExtension\Extension']['base_url'] = $projects[$project]['environments'][$env]['base_url'];
-        //Fill in path to the features directory of the project
-        $profiles['default']['paths']['features'] = '/srv/www/'.$project.'/'.$env.'/.behat';
-        //Add the default profile to the generated yaml
-        $behatYaml['default'] = $profiles['default'];
-        //Get the list of tests to be run and add each of their profiles to the generated yaml
-        $profileList = $projects[$project]['profiles'];
-        foreach($profileList as $t){
-          $behatYaml[$t] = $profiles[$t];
-        }
-        //Create the yml dumper to convert the array to string
-        $dumper = new Dumper();
-        //Dump into yaml string
-        $behatYamlString = $dumper->dump($behatYaml, 7);
+    protected function generate($project, $env, $profile, $profiles, $projects, OutputInterface $output, $test)
+    {
+    //Key-value matching variables in project to profile and then to the output yml
+      $behatYaml = array();
+      //Fill in the baseurl
+      $profiles['default']['extensions']['Behat\MinkExtension\Extension']['base_url'] = $projects[$project]['environments'][$env]['base_url'];
+      //Fill in path to the features directory of the project
+      $profiles['default']['paths']['features'] = '/srv/www/'.$project.'/'.$env.'/.behat';
+      //Add the default profile to the generated yaml
+      $behatYaml['default'] = $profiles['default'];
+      //Get the list of tests to be run and add each of their profiles to the generated yaml
+      $profileList = $projects[$project]['profiles'];
+      foreach($profileList as $t){
+        $behatYaml[$t] = $profiles[$t];
+      }
+      //Create the yml dumper to convert the array to string
+      $dumper = new Dumper();
+      //Dump into yaml string
+      $behatYamlString = $dumper->dump($behatYaml, 7);
 
-        //create the yml file in /tmp
-        file_put_contents('/tmp/'.$project.'_'.$env.'.yml', $behatYamlString);
-        if(file_exists('/tmp/'.$project.'_'.$env.'.yml')){
-          $this->getLogger()->info('Generated the file /tmp/'.$project.'_'.$env.'.yml');
-        } else {
-          $this->getLogger()->info('FAILED to generate the file /tmp/'.$project.'_'.$env.'.yml');
-        }
-        $output->writeln('<header>Generated config file for '.$project.' for env '.$env.' in /tmp</header>');
-        if($test){
-          $this->test($project, $env, $profile, $profileList, $output);
-        }
+      //create the yml file in /tmp
+      file_put_contents('/tmp/'.$project.'_'.$env.'.yml', $behatYamlString);
+      if(file_exists('/tmp/'.$project.'_'.$env.'.yml')){
+        $this->getLogger()->info('Generated the file /tmp/'.$project.'_'.$env.'.yml');
+      } else {
+        $this->getLogger()->info('FAILED the file /tmp/'.$project.'_'.$env.'.yml');
+      }
+      $output->writeln('<header>Generated config file for '.$project.' for env '.$env.' in /tmp</header>');
+      if($test){
+        $this->test($project, $env, $profile, $profileList, $output);
+      }
     }
 
-    protected function test($project, $env, $profile, $profileList, $output){
-              //Run the behat testing command.
-              echo shell_exec('behat -c /tmp/'.$project.'_'.$env.'.yml');
-              $this->getLogger()->info(shell_exec('behat -c /tmp/'.$project.'_'.$env.'.yml'));
-              //Run test on a single profile if specified
-              if($profile){
-                  $this->getLogger()->info('Running tests on '.$r.' for '.$project);
-                  if(!shell_exec('behat -c /tmp/'.$project.'_'.$env.'.yml -p '.$profile.' --format failed')){
-                    $output->writeln('<error>'.$profile.' is not a valid profile.</error>');
-                    $this->getLogger()->error($profile.' is not a valid profile.');
-                  }
-              } else { //else run all the profiles
-                foreach($profileList as $r){
-                  $this->getLogger()->info('Running tests on '.$r.' for '.$project.'...');
-                  $this->getLogger()->info(shell_exec('behat -c /tmp/'.$project.'_'.$env.'.yml -p '.$r.' --format failed'));
-                }
-              }
-              //Remove the file after tests have been run
-              shell_exec('rm /tmp/'.$project.'_'.$env.'.yml');
+    protected function test($project, $env, $profile, $profileList, $output)
+    {
+      //Run the behat testing command.
+      echo shell_exec('behat -c /tmp/'.$project.'_'.$env.'.yml');
+      $this->getLogger()->info(shell_exec('behat -c /tmp/'.$project.'_'.$env.'.yml'));
+      //Run test on a single profile if specified
+      if($profile){
+          $this->getLogger()->info('Running tests on '.$r.' for '.$project);
+          if(!shell_exec('behat -c /tmp/'.$project.'_'.$env.'.yml -p '.$profile.' --format failed')){
+            $output->writeln('<error>'.$profile.' is not a valid profile.</error>');
+            $this->getLogger()->error($profile.' is not a valid profile.');
+          }
+      } else { //else run all the profiles
+        foreach($profileList as $r){
+          $this->getLogger()->info('Running tests on '.$r.' for '.$project.'...');
+          $this->getLogger()->info(shell_exec('behat -c /tmp/'.$project.'_'.$env.'.yml -p '.$r.' --format failed'));
+        }
+      }
+      //Remove the file after tests have been run
+      shell_exec('rm /tmp/'.$project.'_'.$env.'.yml');
     }
 
-    protected function formatOutput(OutputInterface $output){
+    protected function formatOutput(OutputInterface $output)
+    {
       //Formatting terminal output
       $header_style = new OutputFormatterStyle('white', 'green', array('bold'));
       $error_style = new OutputFormatterStyle('white', 'red', array('bold'));
