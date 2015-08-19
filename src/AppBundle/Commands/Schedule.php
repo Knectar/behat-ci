@@ -58,4 +58,5 @@ class Schedule extends ContainerAwareCommand {
           return true;
         }
       }
+      
     }
