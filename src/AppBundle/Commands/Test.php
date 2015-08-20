@@ -41,6 +41,8 @@ class Test extends Trigger {
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->formatOutput($output);
+        //Check if behat binary is found
+        $this->getLocation($this->getYamlParser(), 'behat');
         $p=$input->getArgument('project_name');
         $b=$input->getOption('branch');
         $profile=$input->getOption('profile');
