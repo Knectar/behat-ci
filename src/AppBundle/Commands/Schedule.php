@@ -48,8 +48,8 @@ class Schedule extends ContainerAwareCommand {
           try{
             //Create the yaml parser
             $yaml = new Parser();
-            //read queue location from config.yml
-            $config = $yaml->parse(file_get_contents(dirname(__FILE__) . '/../../../config.yml'));
+            //read queue location from settings.yml
+            $config = $yaml->parse(file_get_contents(dirname(__FILE__) . '/../../../settings.yml'));
             $bhQ = $config['locations']['queue'];
           } catch (ParseException $e) {
               $logger->error("Unable to parse the YAML string: %s");
