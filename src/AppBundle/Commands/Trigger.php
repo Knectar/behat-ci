@@ -31,9 +31,9 @@ class Trigger extends ContainerAwareCommand {
         case 'behat':
           $config = $this->getYamlParser()->parse(file_get_contents(dirname(__FILE__) . '/../../../settings.yml'));
           $location = $config['locations']['behat'] === '/home/sites/.composer/vendor/bin' ? $_SERVER['HOME'].'/.composer/vendor/bin': $config['locations']['behat'];
-          if(!file_exists($behatLocation.'/behat')){
-            $logger->info('Behat not found at '.$behatLocation.'. Please set the absolute path to your behat binary in settings.yml');
-            die('Behat not found at '.$behatLocation.'. Please set the absolute path to your behat binary in settings.yml');
+          if(!file_exists($location.'/behat')){
+            $logger->info('Behat not found at '.$location.'. Please set the absolute path to your behat binary in settings.yml');
+            die('Behat not found at '.$location.'. Please set the absolute path to your behat binary in settings.yml');
           }
         case 'profiles.yml':
         case 'projects.yml':
