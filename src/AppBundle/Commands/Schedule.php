@@ -30,8 +30,15 @@ class Schedule extends ContainerAwareCommand {
     //executes code when command is called
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $logger = $this->getContainer()->get('logger');
+        $yaml = new Parser();
+        $config = $yaml->parse(file_get_contents(dirname(__FILE__) . '/../../../settings.yml'));
+        $behatLocation = $config['locations']['behat'] === '/home/sites/.composer/vendor/bin' ? $_SERVER['HOME'].'/.composer/vendor/bin': $config['locations']['behat'];
+        if(!file_exists($behatLocation.'/behat')){
+          $logger->info('Behat not found at '.$behatLocation.'. Please set the absolute path to your behat binary in settings.yml');
+          die('Behat not found at '.$behatLocation.'. Please set the absolute path to your behat binary in settings.yml');
+        }
 
+        $logger = $this->getContainer()->get('logger');
         $e=$input->getOption('branch');
         //Make sure the input is a proper environment
         if($e!='all' && $e!='dev' && $e!='production'){
@@ -58,5 +65,5 @@ class Schedule extends ContainerAwareCommand {
           return true;
         }
       }
-      
+
     }

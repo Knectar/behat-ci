@@ -33,8 +33,8 @@ class Trigger extends ContainerAwareCommand {
       //Create yml parser
       $yaml = new Parser();
       try {
-        //read queue location from config.yml
-        $config = $yaml->parse(file_get_contents(dirname(__FILE__) . '/../../../config.yml'));
+        //read queue location from settings.yml
+        $config = $yaml->parse(file_get_contents(dirname(__FILE__) . '/../../../settings.yml'));
         $bhQ = $config['locations']['queue'];
       } catch (ParseException $e) {
           printf("Unable to parse the YAML string: %s", $e->getMessage());
@@ -101,10 +101,10 @@ class Trigger extends ContainerAwareCommand {
           $projectsLocation = '/etc/behat-ci/projects.yml';
         } else {
           //If the paths aren't set by the user, they must be in the app directory.
-          //Read from file paths set in config.yml.
-          $config = $yaml->parse(file_get_contents(dirname(__FILE__) . '/../../../config.yml'));
+          //Read from file paths set in settings.yml.
+          $config = $yaml->parse(file_get_contents(dirname(__FILE__) . '/../../../settings.yml'));
           $projectsLocation = ($config['locations']['projects.yml'] === 'projects.yml' ? dirname(__FILE__)  . '/../../../projects.yml' : $config['locations']['projects.yml']);
-          $this->getLogger()->debug('projects.yml found in '.$projectsLocation.' per config.yml');
+          $this->getLogger()->debug('projects.yml found in '.$projectsLocation.' per settings.yml');
         }
         if(file_exists($_SERVER['HOME'] . '/profiles.yml')){
           $this->getLogger()->debug('Found profiles.yml in '.$_SERVER['HOME']);
@@ -114,10 +114,10 @@ class Trigger extends ContainerAwareCommand {
           $profilesLocation = '/etc/behat-ci/profiles.yml';
         } else {
           //If the paths aren't set by the user, they must be in the app directory.
-          //Read from file paths set in config.yml.
-          $config = $yaml->parse(file_get_contents(dirname(__FILE__) . '/../../../config.yml'));
+          //Read from file paths set in settings.yml.
+          $config = $yaml->parse(file_get_contents(dirname(__FILE__) . '/../../../settings.yml'));
           $profilesLocation = ($config['locations']['profiles.yml'] === 'profiles.yml' ? dirname(__FILE__) . '/../../../profiles.yml' : $config['locations']['profiles.yml']);
-          $this->getLogger()->debug('profiles.yml found in '.$projectsLocation.' per config.yml');
+          $this->getLogger()->debug('profiles.yml found in '.$projectsLocation.' per settings.yml');
         }
           $projects = $yaml->parse(file_get_contents($projectsLocation));
           $profiles = $yaml->parse(file_get_contents($profilesLocation));
