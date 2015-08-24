@@ -32,13 +32,18 @@ class Schedule extends ContainerAwareCommand {
     {
         $yaml = new Parser();
         $config = $yaml->parse(file_get_contents(dirname(__FILE__) . '/../../../settings.yml'));
+        $logger = $this->getContainer()->get('logger');
+        try{
+          $logger->info('Schedule Called');
+        } catch (Exception $e){
+          $output->writeln('Could not write to /var/log');
+        }
         $behatLocation = $config['locations']['behat'] === '/home/sites/.composer/vendor/bin' ? $_SERVER['HOME'].'/.composer/vendor/bin': $config['locations']['behat'];
         if(!file_exists($behatLocation.'/behat')){
           $logger->info('Behat not found at '.$behatLocation.'. Please set the absolute path to your behat binary in settings.yml');
           die('Behat not found at '.$behatLocation.'. Please set the absolute path to your behat binary in settings.yml');
         }
 
-        $logger = $this->getContainer()->get('logger');
         $e=$input->getOption('branch');
         //Make sure the input is a proper environment
         if($e!='all' && $e!='dev' && $e!='production'){
@@ -48,7 +53,7 @@ class Schedule extends ContainerAwareCommand {
           try{
             //Create the yaml parser
             $yaml = new Parser();
-            //read queue location from settings.yml
+            //read queue location from config.yml
             $config = $yaml->parse(file_get_contents(dirname(__FILE__) . '/../../../settings.yml'));
             $bhQ = $config['locations']['queue'];
           } catch (ParseException $e) {
