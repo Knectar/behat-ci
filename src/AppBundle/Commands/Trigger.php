@@ -146,10 +146,21 @@ class Trigger extends ContainerAwareCommand {
     {
     //Key-value matching variables in project to profile and then to the output yml
       $behatYaml = array();
-      //Fill in the baseurl
-      $profiles['default']['extensions']['Behat\MinkExtension\Extension']['base_url'] = $projects[$project]['environments'][$env]['base_url'];
-      //Fill in path to the features directory of the project
-      $profiles['default']['paths']['features'] = '/srv/www/'.$project.'/'.$env.'/.behat';
+      //Checks if drupal root specified (Behat 3)
+      if(array_key_exists('suites', $profiles['default'])){
+        //Fill in the baseurl (Behat 2)
+        $profiles['default']['extensions']['Behat\MinkExtension']['base_url'] = $projects[$project]['environments'][$env]['base_url'];
+        //Fill in path to the features directory of the project in default suite
+        $profiles['default']['suites']['default']['paths'] = '/srv/www/'.$project.'/'.$env.'/.behat';
+        if(array_key_exists('Drupal\DrupalExtension', $profiles['default'])){
+          $profiles['default']['extensions']['Drupal\DrupalExtension']['drupal']['drupal_root'] = $projects[$project]['environments'][$env]['drupal_root'];
+        }
+      } else {
+        //Fill in the baseurl (Behat 2)
+        $profiles['default']['extensions']['Behat\MinkExtension\Extension']['base_url'] = $projects[$project]['environments'][$env]['base_url'];
+        //Fill in path to the features directory of the project
+        $profiles['default']['paths']['features'] = '/srv/www/'.$project.'/'.$env.'/.behat';
+      }
       //Add the default profile to the generated yaml
       $behatYaml['default'] = $profiles['default'];
       //Get the list of tests to be run and add each of their profiles to the generated yaml
