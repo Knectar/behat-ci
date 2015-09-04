@@ -161,12 +161,10 @@ class Schedule extends ContainerAwareCommand {
             } else {
               array_push($profiles['default']['suites']['default']['paths'], '/srv/www/'.$project.'/'.$env.'/.behat');
             }
-          }
-
-          if(array_key_exists('Drupal\DrupalExtension', $profiles['default'])){
-            $profiles['default']['extensions']['Drupal\DrupalExtension']['drupal']['drupal_root'] = $projects[$project]['environments'][$env]['drupal_root'];
-          }
-        } else {
+            if(array_key_exists('Drupal\DrupalExtension', $profiles['default'])){
+              $profiles['default']['extensions']['Drupal\DrupalExtension']['drupal']['drupal_root'] = $projects[$project]['environments'][$env]['drupal_root'];
+            }
+          }  else {
           //Fill in the baseurl (Behat 2)
           $profiles['default']['extensions']['Behat\MinkExtension\Extension']['base_url'] = $projects[$project]['environments'][$env]['base_url'];
           if(array_key_exists('features', $projects[$project]['environments'][$env])){
