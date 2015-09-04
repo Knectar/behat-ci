@@ -92,9 +92,11 @@ class Schedule extends ContainerAwareCommand {
 
           $queue = fopen($bhQ.'.txt', "a") or die("Unable to open file!");
           fwrite($queue, '/tmp/'.$project.'_'.$env.'.yml generated and prepared for testing on ' . date("D M j G:i:s") . "\n");
+          $projectYmlList = array();
           $this->getLogger()->info('Queued Tests for '.$project.' on branch '.$env);
           $output->writeln('Schedule request complete');
           fclose($queue);
+
           return true;
         }
         return false;

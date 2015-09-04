@@ -12,7 +12,7 @@ use Symfony\Component\Yaml\Parser;
 use Symfony\Component\Yaml\Exception\ParseException;
 use Symfony\Component\Yaml\Dumper;
 
-class Trigger extends ContainerAwareCommand {
+class Trigger extends Schedule {
 
     //configuration of the command's name, arguments, options, etc
     protected function configure()
@@ -57,23 +57,22 @@ class Trigger extends ContainerAwareCommand {
     //Forms a map array of projects => environments from the queue by parsing each line of the queue string
     protected function readQueue($queue)
     {
-      $projectList = array();
-      $file = fopen($queue, "r") or exit("Unable to open file!");
+      $projectYmlList = array();
+      $file = fopen($bhQ.'.txt', "r") or exit("Unable to open file!");
       while(!feof($file)){
         $lineinQueue = fgets($file);
-        //Grab the project name in isolation from bhqueue and its associated environments
-        $pStringOffsetStart = strpos($lineinQueue, "project:") + 8;
-        $pStringOffsetEnd = (strrpos($lineinQueue, " on ")) - $pStringOffsetStart;
-        $projectName = substr($lineinQueue,  $pStringOffsetStart, $pStringOffsetEnd);
-        $environmentName = substr($lineinQueue, strpos($lineinQueue, "environment:") + 12);
-        $environmentName = preg_replace('~[\r\n]+~', '', $environmentName);
+        //Grab the project .yml file name in isolation from bhqueue and its associated environments
+        $pStringOffsetEnd = strrpos($lineinQueue, "_");
+        $projectName = substr($lineinQueue,  5, $pStringOffsetEnd-strlen($lineinQueue));
+        $environmentName = substr($lineinQueue, $pStringOffsetEnd + 1, strrpos($lineinQueue, ".yml") - $pStringOffsetEnd -1);
         //add the project name to the array (if we haven't already,there could be multiple pushes per minute)
-        if(!in_array($projectName, $projectList) && strlen($projectName)>0){
-          $projectList[$projectName] = $environmentName;
+        if(!in_array($projectName, $projectYmlList) && strlen($projectName)>0){
+          echo($projectName.' and '.$environmentName);
+          $projectYmlList[$projectName] = $environmentName;
         }
       }
       fclose($file);
-      return $projectList;
+      return $projectYmlList;
     }
 
     //Generates a yml configuration using projects.yml and profiles.yml file given a project and environment
@@ -97,52 +96,9 @@ class Trigger extends ContainerAwareCommand {
       }
       //Generate the .yml config and run the tests
       $this->generate($project, $env, $profile, $profiles, $projects, $output, $test);
+
     }
 
-    protected function generate($project, $env, $profile, $profiles, $projects, OutputInterface $output, $test)
-    {
-    //Key-value matching variables in project to profile and then to the output yml
-      $behatYaml = array();
-      //Checks if drupal root specified (Behat 3)
-      if(array_key_exists('suites', $profiles['default'])){
-        //Fill in the baseurl (Behat 2)
-        $profiles['default']['extensions']['Behat\MinkExtension']['base_url'] = $projects[$project]['environments'][$env]['base_url'];
-        //Fill in path to the features directory of the project in default suite
-        $profiles['default']['suites']['default']['paths'] = '/srv/www/'.$project.'/'.$env.'/.behat';
-        if(array_key_exists('Drupal\DrupalExtension', $profiles['default'])){
-          $profiles['default']['extensions']['Drupal\DrupalExtension']['drupal']['drupal_root'] = $projects[$project]['environments'][$env]['drupal_root'];
-        }
-      } else {
-        //Fill in the baseurl (Behat 2)
-        $profiles['default']['extensions']['Behat\MinkExtension\Extension']['base_url'] = $projects[$project]['environments'][$env]['base_url'];
-        //Fill in path to the features directory of the project
-        $profiles['default']['paths']['features'] = '/srv/www/'.$project.'/'.$env.'/.behat';
-      }
-      //Add the default profile to the generated yaml
-      $behatYaml['default'] = $profiles['default'];
-      //Get the list of tests to be run and add each of their profiles to the generated yaml
-      $profileList = $projects[$project]['profiles'];
-      foreach($profileList as $t){
-        $profiles[$t]['extensions']['Behat\MinkExtension\Extension']['selenium2']['capabilities']['name'] = $project. ' ' . $env . ' on ' . $t;
-        $behatYaml[$t] = $profiles[$t];
-      }
-      //Create the yml dumper to convert the array to string
-      $dumper = new Dumper();
-      //Dump into yaml string
-      $behatYamlString = $dumper->dump($behatYaml, 7);
-
-      //create the yml file in /tmp
-      file_put_contents('/tmp/'.$project.'_'.$env.'.yml', $behatYamlString);
-      if(file_exists('/tmp/'.$project.'_'.$env.'.yml')){
-        $this->getLogger()->info('Generated the file /tmp/'.$project.'_'.$env.'.yml');
-      } else {
-        $this->getLogger()->info('FAILED the file /tmp/'.$project.'_'.$env.'.yml');
-      }
-      $output->writeln('<header>Generated config file for '.$project.' for env '.$env.' in /tmp</header>');
-      if($test){
-        $this->test($project, $env, $profile, $profileList, $output);
-      }
-    }
 
     protected function test($project, $env, $profile, $profileList, $output)
     {
@@ -167,13 +123,5 @@ class Trigger extends ContainerAwareCommand {
       shell_exec('rm /tmp/'.$project.'_'.$env.'.yml');
     }
 
-    protected function formatOutput(OutputInterface $output)
-    {
-      //Formatting terminal output
-      $header_style = new OutputFormatterStyle('white', 'green', array('bold'));
-      $error_style = new OutputFormatterStyle('white', 'red', array('bold'));
-      $output->getFormatter()->setStyle('header', $header_style);
-      $output->getFormatter()->setStyle('err', $error_style);
-    }
 
   }
