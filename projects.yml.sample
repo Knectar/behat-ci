@@ -6,9 +6,11 @@ whitetest:
   environments:
   ## should match the branch
     dev:
-        base_url: 
+        base_url:
+        features:
     production:
-        base_url: 
+        base_url:
+        features:
   profiles: #to run as set in profiles.yml
     - win-chrome
     - android
@@ -17,9 +19,11 @@ massenergy:
   environments:
   ## should match the branch
     dev:
-        base_url: 
+        base_url:
+        features:
     production:
-        base_url: 
+        base_url:
+        features:
   profiles: #to run as set in profiles.yml
     - win-chrome
     - android

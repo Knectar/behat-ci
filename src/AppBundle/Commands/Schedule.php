@@ -13,6 +13,45 @@ use Symfony\Component\Yaml\Exception\ParseException;
 use Psr\Log\LoggerInterface;
 
 class Schedule extends ContainerAwareCommand {
+
+  protected function getLogger(){
+    $logger = $this->getContainer()->get('logger');
+    return $logger;
+  }
+
+  protected function getYamlParser(){
+    //Create yml parser
+    $yaml = new Parser();
+    return $yaml;
+  }
+
+  //Grabs locations from settings.yml and confirms existance of files at their specified paths
+  protected function getLocation($yamlParser, $file){
+    switch($file){
+      case 'behat':
+        $config = $this->getYamlParser()->parse(file_get_contents(dirname(__FILE__) . '/../../../settings.yml'));
+        $location = $config['locations']['behat'] === '/home/sites/.composer/vendor/bin' ? $_SERVER['HOME'].'/.composer/vendor/bin': $config['locations']['behat'];
+        if(!file_exists($location.'/behat')){
+          $logger->info('Behat not found at '.$location.'. Please set the absolute path to your behat binary in settings.yml');
+          die('Behat not found at '.$location.'. Please set the absolute path to your behat binary in settings.yml');
+        }
+      case 'profiles.yml':
+      case 'projects.yml':
+        if(file_exists($_SERVER['HOME'] . '/' . $file)){
+          $this->getLogger()->debug('Found '.$file.' in '.$_SERVER['HOME']);
+          $location = $_SERVER['HOME'] . '/' . $file;
+        } else if (file_exists('/etc/behat-ci/'.$file)){
+          $this->getLogger()->debug('Found '.$file.' in /etc/behat-ci/');
+          $location = '/etc/behat-ci/'.$file;
+        } else {
+          //If the paths aren't set by the user, they must be in the app directory.
+          //Read from file paths set in settings.yml.
+          $config = $this->getYamlParser()->parse(file_get_contents(dirname(__FILE__) . '/../../../settings.yml'));
+          $location = ($config['locations'][$file] === $file ? dirname(__FILE__)  . '/../../../'.$file : $config['locations'][$file]);
+          $this->getLogger()->debug($file.' found in '.$location.' per settings.yml');
+    }
+  }
+  return $location;
    //configuration of the command's name, arguments, options, etc
     protected function configure()
     {
@@ -30,21 +69,7 @@ class Schedule extends ContainerAwareCommand {
     //executes code when command is called
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $yaml = new Parser();
-        $config = $yaml->parse(file_get_contents(dirname(__FILE__) . '/../../../settings.yml'));
-        $logger = $this->getContainer()->get('logger');
-        try{
-          $logger->info('Schedule Called');
-        } catch (Exception $e){
-          $output->writeln('Could not write to /var/log');
-        }
-        $behatLocation = $config['locations']['behat'] === '/home/sites/.composer/vendor/bin' ? $_SERVER['HOME'].'/.composer/vendor/bin': $config['locations']['behat'];
-        if(!file_exists($behatLocation.'/behat')){
-          $logger->info('Behat not found at '.$behatLocation.'. Please set the absolute path to your behat binary in settings.yml');
-          die('Behat not found at '.$behatLocation.'. Please set the absolute path to your behat binary in settings.yml');
-        }
-
-        $e=$input->getOption('branch');
+        $this->readConfigFiles($input->getArgument('repo_name'), $input->getOption('branch'), $input, $output);
         //Make sure the input is a proper environment
         if($e!='all' && $e!='dev' && $e!='production'){
           $output->writeln('<error>Please enter a valid environment! (dev, production, all)<error>');
@@ -71,4 +96,38 @@ class Schedule extends ContainerAwareCommand {
         }
       }
 
+      protected function readConfigFiles($project, $branch, InputInterface $input, OutputInterface $output){
+        $yaml = new Parser();
+        $config = $yaml->parse(file_get_contents(dirname(__FILE__) . '/../../../settings.yml'));
+        $logger = $this->getContainer()->get('logger');
+        try{
+          $logger->info('Schedule Called');
+        } catch (Exception $e){
+          $output->writeln('Could not write to /var/log');
+        }
+        $behatLocation = $config['locations']['behat'] === '/home/sites/.composer/vendor/bin' ? $_SERVER['HOME'].'/.composer/vendor/bin': $config['locations']['behat'];
+        if(!file_exists($behatLocation.'/behat')){
+          $logger->info('Behat not found at '.$behatLocation.'. Please set the absolute path to your behat binary in settings.yml');
+          die('Behat not found at '.$behatLocation.'. Please set the absolute path to your behat binary in settings.yml');
+        }
+      }
+
+      protected function configAsArrays($project, $env, $profile, OutputInterface $output, $test=true){
+        if(!file_exists('/etc/behat-ci')){
+          $this->getLogger()->debug('Creating directory etc/behat-ci/');
+          $this->getLogger()->debug(shell_exec('mkdir -p /etc/behat-ci/'));
+        }
+
+        try {
+          $projectsLocation = $this->getLocation($this->getYamlParser(), 'projects.yml');
+          $profilesLocation = $this->getLocation($this->getYamlParser(), 'profiles.yml');
+          $projects = $this->getYamlParser()->parse(file_get_contents($projectsLocation));
+          $profiles = $this->getYamlParser()->parse(file_get_contents($profilesLocation));
+        } catch (ParseException $e) {
+            $this->getLogger()->error("Unable to parse the YAML string: %s");
+            printf("Unable to parse the YAML string: %s", $e->getMessage());
+        }
+        //Generate the .yml config and run the tests
+        $this->generate($project, $env, $profile, $profiles, $projects, $output, $test);
+      }
     }
