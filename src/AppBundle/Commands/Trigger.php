@@ -42,11 +42,13 @@ class Trigger extends Schedule {
         file_put_contents($bhQ.'.txt', "");
         foreach($projectList as $p => $e){
           if($e == 'all'){
-              //generates/runs tests for both dev and prod
-              $this->bhTrigger($p, 'dev', NULL, $output);
-              $this->bhTrigger($p, 'production', NULL, $output);
-          }else{
-              $this->bhTrigger($p, $e, NULL, $output);
+             $projectsLocation = $this->getLocation($this->getYamlParser(), 'projects.yml');
+             $projects = $this->getYamlParser()->parse(file_get_contents($projectsLocation));
+             foreach($projects[$p]['environments'] as $env){
+                 $this->test($p, $env, $output);
+             }
+          } else {
+              $this->test($p, $e, $output);
           }
         }
         return true;
@@ -58,7 +60,7 @@ class Trigger extends Schedule {
     protected function readQueue($queue)
     {
       $projectYmlList = array();
-      $file = fopen($bhQ.'.txt', "r") or exit("Unable to open file!");
+      $file = fopen($queue, "r") or exit("Unable to open file!");
       while(!feof($file)){
         $lineinQueue = fgets($file);
         //Grab the project .yml file name in isolation from bhqueue and its associated environments
@@ -73,51 +75,20 @@ class Trigger extends Schedule {
       }
       fclose($file);
       return $projectYmlList;
-    }
-
-    //Generates a yml configuration using projects.yml and profiles.yml file given a project and environment
-    protected function bhTrigger($project, $env, $profile, OutputInterface $output, $test=true)
-    {
-      //Read in profiles.yml and projects.yml as arrays
-      //Find the location of the .yml files and parse them as strings. Configs in home directory will overwrite any global configs in /etc/
-      if(!file_exists('/etc/behat-ci')){
-        $this->getLogger()->debug('Creating directory etc/behat-ci/');
-        $this->getLogger()->debug(shell_exec('mkdir -p /etc/behat-ci/'));
-      }
-
-      try {
-        $projectsLocation = $this->getLocation($this->getYamlParser(), 'projects.yml');
-        $profilesLocation = $this->getLocation($this->getYamlParser(), 'profiles.yml');
-        $projects = $this->getYamlParser()->parse(file_get_contents($projectsLocation));
-        $profiles = $this->getYamlParser()->parse(file_get_contents($profilesLocation));
-      } catch (ParseException $e) {
-          $this->getLogger()->error("Unable to parse the YAML string: %s");
-          printf("Unable to parse the YAML string: %s", $e->getMessage());
-      }
-      //Generate the .yml config and run the tests
-      $this->generate($project, $env, $profile, $profiles, $projects, $output, $test);
 
     }
 
-
-    protected function test($project, $env, $profile, $profileList, $output)
+    protected function test($project, $env, $output)
     {
       $behatLocation = $this->getLocation($this->getYamlParser(), 'behat');
       //Run the behat testing command.
       echo shell_exec($behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml');
       $this->getLogger()->info(shell_exec($behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml'));
-      //Run test on a single profile if specified
-      if($profile){
-          $this->getLogger()->info('Running tests on '.$r.' for '.$project);
-          if(!shell_exec($behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml -p '.$profile.' --format failed')){
-            $output->writeln('<error>'.$profile.' is not a valid profile.</error>');
-            $this->getLogger()->error($profile.' is not a valid profile.');
-          }
-      } else { //else run all the profiles
-        foreach($profileList as $r){
-          $this->getLogger()->info('Running tests on '.$r.' for '.$project.'...');
-          $this->getLogger()->info(shell_exec($behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml -p '.$r.' --format failed'));
-        }
+      $projectsLocation = $this->getLocation($this->getYamlParser(), 'projects.yml');
+      $projects = $this->getYamlParser()->parse(file_get_contents($projectsLocation));
+      foreach($projects[$project]['profiles'] as $r){
+        $this->getLogger()->info('Running tests on '.$r.' for '.$project.'...');
+        $this->getLogger()->info(shell_exec($behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml -p '.$r.' --format failed'));
       }
       //Remove the file after tests have been run
       shell_exec('rm /tmp/'.$project.'_'.$env.'.yml');

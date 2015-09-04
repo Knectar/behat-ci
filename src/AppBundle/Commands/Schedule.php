@@ -131,7 +131,7 @@ class Schedule extends ContainerAwareCommand {
             $this->getLogger()->info($project.' is not defined in projects.yml!');
             die();
           }
-          if(!array_key_exists($env, $projects[$project]['environments'])){
+          if(!array_key_exists($env, $projects[$project]['environments']) && $env!='all'){
             $output->writeln('<error>.'.$env.' is not a defined environment for project '.$project.'<error>');
             $this->getLogger()->info($env.' is not a defined environment for project '.$project);
             die();
