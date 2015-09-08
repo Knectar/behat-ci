@@ -16,6 +16,7 @@ use Psr\Log\LoggerInterface;
 class Schedule extends ContainerAwareCommand {
 
   protected function getLogger(){
+    //create logger
     $logger = $this->getContainer()->get('logger');
     return $logger;
   }
@@ -65,12 +66,12 @@ class Schedule extends ContainerAwareCommand {
            ->addOption('branch',
                         'b',
                         InputOption::VALUE_OPTIONAL,
-                        'The environment/branch. use --branch=all for both dev and production',
+                        'The environment/branch. use --branch=all for all instances/environments',
                         1
                       );
       }
 
-    //executes code when command is called
+    //executes code when command is called. writes to the queue and generates config file
     protected function execute(InputInterface $input, OutputInterface $output)
     {
       $this->getLogger()->debug('Schedule called');
@@ -151,9 +152,9 @@ class Schedule extends ContainerAwareCommand {
       {
       //Key-value matching variables in project to profile and then to the output yml
         $behatYaml = array();
-        //Checks if drupal root specified (Behat 3)
+
         if(array_key_exists('suites', $profiles['default'])){
-          //Fill in the baseurl (Behat 2)
+          //Fill in the baseurl (Behat 3)
           $profiles['default']['extensions']['Behat\MinkExtension']['base_url'] = $projects[$project]['environments'][$env]['base_url'];
           //Fill in path to the features directory of the project in default suite
             if(array_key_exists('features', $projects[$project]['environments'][$env])){
@@ -161,6 +162,7 @@ class Schedule extends ContainerAwareCommand {
             } else {
               array_push($profiles['default']['suites']['default']['paths'], '/srv/www/'.$project.'/'.$env.'/.behat');
             }
+            //Checks if drupal root specified (Behat 3)
             if(array_key_exists('Drupal\DrupalExtension', $profiles['default'])){
               $profiles['default']['extensions']['Drupal\DrupalExtension']['drupal']['drupal_root'] = $projects[$project]['environments'][$env]['drupal_root'];
             }
