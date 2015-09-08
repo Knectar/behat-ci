@@ -23,18 +23,8 @@ class Test extends Trigger {
                         InputOption::VALUE_OPTIONAL,
                         'Environment/branch. use --branch=all for both dev and production',
                         1
-                      )
-           ->addOption('profile',
-                       'p',
-                       InputOption::VALUE_OPTIONAL,
-                       'Profile',
-                       null
-                      )
-           ->addOption('generate',
-                       'g',
-                       InputOption::VALUE_NONE,
-                       'If set, will generate a behat .yml config file in /tmp/ but will NOT run tests and delete the file.'
-                     );
+                      );
+
       }
 
     //executes code when command is called
@@ -45,26 +35,8 @@ class Test extends Trigger {
         $this->getLocation($this->getYamlParser(), 'behat');
         $p=$input->getArgument('project_name');
         $b=$input->getOption('branch');
-        $profile=$input->getOption('profile');
-        //Make sure the input is a proper environment
-        if($b!='all' && $b!='dev' && $b!='production'){
-          $output->writeln('<error>Please enter a valid environment! (dev, production, all)<error>');
-        } else if ($input->getOption('generate')){
-          $this->bhTrigger($p, $b, NULL, $output, false);
-        } else {
-          if($profile){
-            $this->bhTrigger($p, $b, $profile, $output);
-          } else {
-              if($b == 'all'){
-                  //generates/runs tests for both dev and prod
-                  $this->bhTrigger($p, 'dev', NULL, $output);
-                  $this->bhTrigger($p, 'production', NULL, $output);
-              } else {
-                  $this->bhTrigger($p, $b, NULL, $output);
-              }
-          }
-        }
-
+        shell_exec('bh schedule '.$p.' -b '.$b);
+        shell_exec('bh trigger');
       }
 
     }
