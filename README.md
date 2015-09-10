@@ -12,7 +12,13 @@ Behat continuous integration CLI is an efficient way to have behat testing run a
 * PHP 5.5+ (date.timezone must be defined in php.ini for these commands to work properly)
 
 ## Installation
-1. Include behat-ci in your global composer.json with `composer global require knectar/behat-ci`
+
+1. Include behat-ci in your global composer.json with: 
+
+~~~
+composer global require knectar/behat-ci
+~~~
+
 2. Run `composer global update` to install (No database configuration needed.)
 3. Run `composer install` in the directory where the app was saved. (usually /home/user/.composer/vendor/knectar/behat-ci/app)
 4. Update your system PATH to include the application's app directory (path/to/global/.composer/vendor/knectar/behat-ci/app)
@@ -20,6 +26,8 @@ Behat continuous integration CLI is an efficient way to have behat testing run a
 
 ## Configuration
 There are 2 files that control how where and on what devices a test runs on.
+
+todo: where to put the files
 
 _profiles.yml_ is a list of device profiles. Feel free to add more according to the current standards and what is available on sauce labs.
 
