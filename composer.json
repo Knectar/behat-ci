@@ -1,7 +1,7 @@
 {
     "name": "knectar/behat-ci",
     "description": "A console application that schedules, generates configurations, and runs behat tests on a server",
-    "homepage": "https://github.com/Knectar/behat-ci"
+    "homepage": "https://github.com/Knectar/behat-ci",
     "license": "MIT",
     "minimum-stability": "stable",
     "prefer-stable": true,
@@ -11,6 +11,9 @@
       { "name": "Josh Beauregard", "email": "josh.beauregard@knectar.com" },
       { "name": "Adam Wellen", "email": "adam.wellen@knectar.com" }
     ],
+  "support": {
+    "issue que": "https://github.com/Knectar/behat-ci/issues"
+  },
     "autoload": {
         "psr-4": {
             "": "src/",
