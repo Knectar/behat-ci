@@ -1,6 +1,11 @@
 {
     "name": "knectar/behat-ci",
     "description": "A console application that schedules, generates configurations, and runs behat tests on a server",
+    "keywords": [
+      "behat",
+      "testing",
+      "continuous integration"
+    ],
     "homepage": "https://github.com/Knectar/behat-ci",
     "license": "MIT",
     "minimum-stability": "stable",
