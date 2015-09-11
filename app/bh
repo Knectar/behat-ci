@@ -2,8 +2,7 @@
 <?php
 set_time_limit(0);
 //include composer autoloader
-require_once __DIR__ . '/../vendor/autoload.php';
-require_once __DIR__.'/AppKernel.php';
+behat_ci_preflight_prepare();
 
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Input\ArgvInput;
@@ -20,7 +19,7 @@ $env = $input->getParameterOption(array('--env', '-e'), getenv('SYMFONY_ENV') ?:
 $debug = getenv('SYMFONY_DEBUG') !== '0' && !$input->hasParameterOption(array('--no-debug', '')) && $env !== 'prod';
 
 if ($debug) {
-    Debug::enable();
+  Debug::enable();
 }
 
 $kernel = new AppKernel($env, $debug);
@@ -32,3 +31,36 @@ $application->add(new Trigger());
 $application->add(new Clear());
 $application->add(new Test());
 $application->run($input);
+
+function behat_ci_preflight_prepare() {
+  define('behat_ci_BASE_PATH', dirname(dirname(__FILE__)));
+  // Local means that autoload.php is inside of behat_ci. That is, behat_ci is its own Composer project.
+  // Global means autoload.php is outside of behat_ci. That is, behat_ci is a dependency of a bigger project.
+  $local_vendor_path = behat_ci_BASE_PATH . '/vendor/autoload.php';
+  $global_vendor_path = behat_ci_BASE_PATH . '/../../../vendor/autoload.php';
+
+  // Check for a local composer install or a global composer install. Vendor dirs are in different spots).
+  if (file_exists($local_vendor_path)) {
+    $vendor_path = $local_vendor_path;
+  }
+  elseif (file_exists($global_vendor_path)) {
+    $vendor_path = $global_vendor_path;
+  }
+  else {
+    $msg = "Unable to load autoload.php. behat-ci requires Composer in order to install its dependencies and autoload classes. Please see README.md\n";
+    fwrite(STDERR, $msg);
+    return FALSE;
+  }
+
+  $classloader = require $vendor_path;
+
+  require_once behat_ci_BASE_PATH . '/vendor/autoload.php';
+  require_once behat_ci_BASE_PATH . '/app/AppKernel.php';
+
+  // Check supported version of PHP.
+  define('behat_ci_MINIMUM_PHP', '5.5');
+  if (version_compare(phpversion(), behat_ci_MINIMUM_PHP) < 0 && !getenv('behat_ci_NO_MIN_PHP')) {
+    return behat_ci_set_error('behat_ci_REQUIREMENTS_ERROR', dt('Your command line PHP installation is too old. behat_ci requires at least PHP !version. To suppress this check, set the environment variable behat_ci_NO_MIN_PHP=1', array('!version' => behat_ci_MINIMUM_PHP)));
+  }
+
+}
