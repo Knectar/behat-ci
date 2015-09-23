@@ -15,7 +15,7 @@ whitetest:
     - win-chrome
     - android
     - iPhone
-  behat-additionalparams:
+  behat-params:
         format:
         out:
 massenergy:

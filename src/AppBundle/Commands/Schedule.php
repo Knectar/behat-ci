@@ -108,7 +108,6 @@ class Schedule extends ContainerAwareCommand {
           $this->getLogger()->info('Queued Tests for '.$project.' on branch '.$env);
           $output->writeln('Schedule request complete');
           fclose($queue);
-
           return true;
         }
         return false;

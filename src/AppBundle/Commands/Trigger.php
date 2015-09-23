@@ -40,15 +40,17 @@ class Trigger extends Schedule {
         $projectList = $this->readQueue($bhQ.'.txt');
         //Removed scheduled tests from queue
         file_put_contents($bhQ.'.txt', "");
+        $projectsLocation = $this->getLocation($this->getYamlParser(), 'projects.yml');
+        $projects = $this->getYamlParser()->parse(file_get_contents($projectsLocation));
         foreach($projectList as $p => $e){
+          $behatFlags = $projects[$p]['behatparams'];
           if($e == 'all'){
-             $projectsLocation = $this->getLocation($this->getYamlParser(), 'projects.yml');
-             $projects = $this->getYamlParser()->parse(file_get_contents($projectsLocation));
+             //Get all the environments for the project from projects.yml
              foreach($projects[$p]['environments'] as $env){
-                 $this->test($p, $env, $output);
+                 $this->test($p, $env, $behatFlags, $p['revision'], $output);
              }
           } else {
-              $this->test($p, $e, $behatFlags, $output);
+              $this->test($p, $e, $behatFlags, $p['revision'], $output);
           }
         }
         return true;
@@ -56,7 +58,7 @@ class Trigger extends Schedule {
 
     }
 
-    //Forms a map array of projects => environments from the queue by parsing each line of the queue string
+    //Forms a map array of projects => environments and revision ids from the queue by parsing each line of the queue string
     protected function readQueue($queue)
     {
       $projectYmlList = array();
@@ -67,10 +69,11 @@ class Trigger extends Schedule {
         $pStringOffsetEnd = strrpos($lineinQueue, "_");
         $projectName = substr($lineinQueue,  5, $pStringOffsetEnd-strlen($lineinQueue));
         $environmentName = substr($lineinQueue, $pStringOffsetEnd + 1, strrpos($lineinQueue, ".yml") - $pStringOffsetEnd -1);
+        $revisionId = substr($lineinQueue, strrpos($lineinQueue, "ID") + 3, strlen($lineinQueue));
         //add the project name to the array (if we haven't already,there could be multiple pushes per minute)
         if(!in_array($projectName, $projectYmlList) && strlen($projectName)>0){
-          echo($projectName.' and '.$environmentName);
           $projectYmlList[$projectName] = $environmentName;
+          $projectYmlList['revision'] = $revisionId;
         }
       }
       fclose($file);
@@ -78,17 +81,26 @@ class Trigger extends Schedule {
 
     }
 
-    protected function test($project, $env, $additionalBehatParameters, $output)
+    protected function test($project, $env, $additionalBehatParameters, $revisionId, $output)
     {
       $behatLocation = $this->getLocation($this->getYamlParser(), 'behat');
       //Run the behat testing command.
-      echo shell_exec($behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml');
-      $this->getLogger()->info(shell_exec($behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml'));
+      if($additionalBehatParameters){
+        $addFlag = ' ';
+        foreach($additionalBehatParameters as $flag => $param){
+          $addFlag = $addFlag . '--' .$flag. ' '.$param;
+        }
+        echo shell_exec($behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml'.$addFlag);
+        $this->getLogger()->info(shell_exec($behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml'.$addFlag));
+      } else {
+        echo shell_exec($behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml');
+        $this->getLogger()->info(shell_exec($behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml'));
+      }
       $projectsLocation = $this->getLocation($this->getYamlParser(), 'projects.yml');
       $projects = $this->getYamlParser()->parse(file_get_contents($projectsLocation));
       foreach($projects[$project]['profiles'] as $r){
         $this->getLogger()->info('Running tests on '.$r.' for '.$project.'...');
-        $this->getLogger()->info(shell_exec($behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml -p '.$r.' --format failed'));
+        $this->getLogger()->info(shell_exec($behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml -p '.$r));
       }
       //Remove the file after tests have been run
       shell_exec('rm /tmp/'.$project.'_'.$env.'.yml');
