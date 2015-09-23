@@ -54,8 +54,8 @@ function behat_ci_preflight_prepare() {
 
   $classloader = require $vendor_path;
 
-  require_once behat_ci_BASE_PATH . '/vendor/autoload.php';
-  require_once behat_ci_BASE_PATH . '/app/AppKernel.php';
+  require_once $vendor_path ;
+  require_once behat_ci_BASE_PATH  . '/app/AppKernel.php';
 
   // Check supported version of PHP.
   define('behat_ci_MINIMUM_PHP', '5.5');
