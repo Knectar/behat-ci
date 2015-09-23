@@ -48,7 +48,7 @@ class Trigger extends Schedule {
                  $this->test($p, $env, $output);
              }
           } else {
-              $this->test($p, $e, $output);
+              $this->test($p, $e, $behatFlags, $output);
           }
         }
         return true;
@@ -78,7 +78,7 @@ class Trigger extends Schedule {
 
     }
 
-    protected function test($project, $env, $output)
+    protected function test($project, $env, $additionalBehatParameters, $output)
     {
       $behatLocation = $this->getLocation($this->getYamlParser(), 'behat');
       //Run the behat testing command.

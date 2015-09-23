@@ -68,7 +68,13 @@ class Schedule extends ContainerAwareCommand {
                         InputOption::VALUE_OPTIONAL,
                         'The environment/branch. use --branch=all for all instances/environments',
                         1
-                      );
+                      )
+            ->addOption('revision',
+                         'r',
+                         InputOption::VALUE_OPTIONAL,
+                         'Revision id from beanstalk',
+                         1
+                       );
       }
 
     //executes code when command is called. writes to the queue and generates config file
@@ -79,6 +85,7 @@ class Schedule extends ContainerAwareCommand {
 
       $project = $input->getArgument('repo_name');
       $env = $input->getOption('branch');
+      $revision = $input->getOption('revision');
 
         if($this->readConfigFiles($project, $env, $input, $output)){
           try{
@@ -92,7 +99,11 @@ class Schedule extends ContainerAwareCommand {
           //write timestamp, project name, instance to queue.
 
           $queue = fopen($bhQ.'.txt', "a") or die("Unable to open file!");
-          fwrite($queue, '/tmp/'.$project.'_'.$env.'.yml generated and prepared for testing on ' . date("D M j G:i:s") . "\n");
+          if($revision){
+            fwrite($queue, '/tmp/'.$project.'_'.$env.'.yml generated and prepared for testing on ' . date("D M j G:i:s") . " with revision ID " .$revision. "\n");
+          } else {
+            fwrite($queue, '/tmp/'.$project.'_'.$env.'.yml generated and prepared for testing on ' . date("D M j G:i:s") . " with revision ID 0 \n");
+          }
           $projectYmlList = array();
           $this->getLogger()->info('Queued Tests for '.$project.' on branch '.$env);
           $output->writeln('Schedule request complete');

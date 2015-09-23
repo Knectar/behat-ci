@@ -3,6 +3,7 @@ bhqueue.txt
 bhqueuelog.txt
 bhqueue.txt~
 bhqueuelog.txt~
+npm-debug.log
 /app/bootstrap.php.cache
 /app/cache/*
 !app/cache/.gitkeep

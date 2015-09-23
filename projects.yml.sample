@@ -15,6 +15,9 @@ whitetest:
     - win-chrome
     - android
     - iPhone
+  behat-additionalparams:
+        format:
+        out:
 massenergy:
   environments:
   ## should match the branch
