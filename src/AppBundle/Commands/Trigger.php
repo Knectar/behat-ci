@@ -49,10 +49,10 @@ class Trigger extends Schedule {
           if($e == 'all'){
              //Get all the environments for the project from projects.yml
              foreach($projects[$p]['environments'] as $env){
-                 $this->test($p, $env, $this->additionalParamsStringBuilder($behatFlags, $p['revision']), $p['revision'], $output);
+                 $this->test($p, $projects, $env, $this->additionalParamsStringBuilder($behatFlags, $p['revision']), $p['revision'], $output);
              }
           } else {
-              $this->test($p, $e, $this->additionalParamsStringBuilder($behatFlags, $p['revision']), $p['revision'], $output);
+              $this->test($p, $projects, $e, $this->additionalParamsStringBuilder($behatFlags, $p['revision']), $p['revision'], $output);
           }
         }
         return true;
@@ -101,23 +101,26 @@ class Trigger extends Schedule {
     return $addFlagString;
   }
 
-    protected function test($project, $env, $additionalParams, $revisionId, $output)
+    protected function test($project, $projects, $env, $additionalParams, $revisionId, $output)
     {
       $behatLocation = $this->getLocation($this->getYamlParser(), 'behat');
       //Run the behat testing command.
       if($additionalParams){
         echo shell_exec($behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml'.$addFlag);
         $this->getLogger()->info(shell_exec($behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml'.$addFlag));
+        foreach($projects[$project]['profiles'] as $r){
+          $this->getLogger()->info('Running tests on '.$r.' for '.$project.'...');
+          $this->getLogger()->info(shell_exec($behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml -p '.$r. ' '.$addFlag));
+        }
       } else {
         echo shell_exec($behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml');
         $this->getLogger()->info(shell_exec($behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml'));
+        foreach($projects[$project]['profiles'] as $r){
+          $this->getLogger()->info('Running tests on '.$r.' for '.$project.'...');
+          $this->getLogger()->info(shell_exec($behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml -p '.$r));
+        }
       }
-      $projectsLocation = $this->getLocation($this->getYamlParser(), 'projects.yml');
-      $projects = $this->getYamlParser()->parse(file_get_contents($projectsLocation));
-      foreach($projects[$project]['profiles'] as $r){
-        $this->getLogger()->info('Running tests on '.$r.' for '.$project.'...');
-        $this->getLogger()->info(shell_exec($behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml -p '.$r));
-      }
+
       //Remove the file after tests have been run
       shell_exec('rm /tmp/'.$project.'_'.$env.'.yml');
     }
