@@ -72,7 +72,7 @@ class Schedule extends ContainerAwareCommand {
             ->addOption('revision',
                          'r',
                          InputOption::VALUE_OPTIONAL,
-                         'Revision id from beanstalk',
+                         'Revision id from beanstalk/any other source. Defaults to 0',
                          1
                        );
       }

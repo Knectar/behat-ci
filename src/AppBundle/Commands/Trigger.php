@@ -43,14 +43,16 @@ class Trigger extends Schedule {
         $projectsLocation = $this->getLocation($this->getYamlParser(), 'projects.yml');
         $projects = $this->getYamlParser()->parse(file_get_contents($projectsLocation));
         foreach($projectList as $p => $e){
-          $behatFlags = $projects[$p]['behatparams'];
+          echo 'hello?';
+          $behatFlags = array_key_exists('behat-params', $projects[$p]) ? $projects[$p]['behat-params'] : null;
+          echo 'wolo';
           if($e == 'all'){
              //Get all the environments for the project from projects.yml
              foreach($projects[$p]['environments'] as $env){
-                 $this->test($p, $env, $behatFlags, $p['revision'], $output);
+                 $this->test($p, $env, $this->additionalParamsStringBuilder($behatFlags, $p['revision']), $p['revision'], $output);
              }
           } else {
-              $this->test($p, $e, $behatFlags, $p['revision'], $output);
+              $this->test($p, $e, $this->additionalParamsStringBuilder($behatFlags, $p['revision']), $p['revision'], $output);
           }
         }
         return true;
@@ -61,7 +63,7 @@ class Trigger extends Schedule {
     //Forms a map array of projects => environments and revision ids from the queue by parsing each line of the queue string
     protected function readQueue($queue)
     {
-      $projectYmlList = array();
+      $projectYmlList = array('revision');
       $file = fopen($queue, "r") or exit("Unable to open file!");
       while(!feof($file)){
         $lineinQueue = fgets($file);
@@ -81,15 +83,29 @@ class Trigger extends Schedule {
 
     }
 
-    protected function test($project, $env, $additionalBehatParameters, $revisionId, $output)
+    protected function additionalParamsStringBuilder($additionalBehatParameters, $revisionId){
+      if($additionalBehatParameters==null){
+        return null;
+      }
+      $addFlagString = ' ';
+      foreach($additionalBehatParameters as $flag => $param){
+        if($flag == 'out'){
+          $pathToOutput = substr($param, 0, strrpos($param, "."));
+          $fileExtension = substr($param, strrpos($param, "."), strlen($param));
+          $addFlagString = $addFlagString . '--' .$flag. ' ' . $pathToOutput.$revisionId.$fileExtension;
+          echo $pathToOutput . ' ' . $fileExtension . "\n";
+        } else {
+          $addFlagString = $addFlagString . '--' .$flag. ' '.$param;
+        }
+    }
+    return $addFlagString;
+  }
+
+    protected function test($project, $env, $additionalParams, $revisionId, $output)
     {
       $behatLocation = $this->getLocation($this->getYamlParser(), 'behat');
       //Run the behat testing command.
-      if($additionalBehatParameters){
-        $addFlag = ' ';
-        foreach($additionalBehatParameters as $flag => $param){
-          $addFlag = $addFlag . '--' .$flag. ' '.$param;
-        }
+      if($additionalParams){
         echo shell_exec($behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml'.$addFlag);
         $this->getLogger()->info(shell_exec($behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml'.$addFlag));
       } else {

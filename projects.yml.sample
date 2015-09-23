@@ -17,7 +17,7 @@ whitetest:
     - iPhone
   behat-params:
         format:
-        out:
+        out: /home/jacob/sample.html
 massenergy:
   environments:
   ## should match the branch
