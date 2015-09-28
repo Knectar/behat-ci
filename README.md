@@ -8,7 +8,7 @@ Behat continuous integration CLI is an efficient way to manage Behat configurati
 ## System requirements
 * [Composer](https://getcomposer.org/)
 * The latest stable version of [Symfony](http://symfony.com/ "Symfony 2")
-* PHP 5.5+ (date.timezone must be defined in php.ini for these commands to work properly)
+* PHP 5.5+ 
 
 ## Installation
 

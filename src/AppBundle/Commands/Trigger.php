@@ -37,23 +37,33 @@ class Trigger extends Schedule {
       }
       //Check if there are tests scheduled, i.e., queue file is not empty
       if (file_get_contents($bhQ.'.txt') != ''){
+        echo 'hello';
+        //Array of projects=>environments from the queue
         $projectList = $this->readQueue($bhQ.'.txt');
         //Removed scheduled tests from queue
         file_put_contents($bhQ.'.txt', "");
         $projectsLocation = $this->getLocation($this->getYamlParser(), 'projects.yml');
+        //Read the projects.yml file
         $projects = $this->getYamlParser()->parse(file_get_contents($projectsLocation));
+        //Go match the project specified in the command to the settings in projects.yml
         foreach($projectList as $p => $e){
-          echo 'hello?';
-          $behatFlags = array_key_exists('behat-params', $projects[$p]) ? $projects[$p]['behat-params'] : null;
-          echo 'wolo';
-          if($e == 'all'){
-             //Get all the environments for the project from projects.yml
-             foreach($projects[$p]['environments'] as $env){
-                 $this->test($p, $projects, $env, $this->additionalParamsStringBuilder($behatFlags, $p['revision']), $p['revision'], $output);
-             }
-          } else {
-              $this->test($p, $projects, $e, $this->additionalParamsStringBuilder($behatFlags, $p['revision']), $p['revision'], $output);
+          foreach($e as $env => $rid){
+            echo in_array('behat-params', $projectList[$p]);
+            //Check if there are behat-params for the specified project
+            $behatFlags = array();
+            // $behatFlags = in_array('behat-params', $projects[$p]) ? $projects[$p]['behat-params'] : null;
+            if($e == 'all'){
+               //Get all the environments for the project from projects.yml
+               foreach($projects[$p]['environments'] as $env){
+                  //  $this->test($p, $projects, $env, $this->additionalParamsStringBuilder($behatFlags, $p['revision']), $p['revision'], $output);
+               }
+            } else {
+              if($p !== 'revision'){
+                $this->test($p, $projects, $e, $this->additionalParamsStringBuilder($behatFlags, $projectList['revision']), $projectList['revision'], $output);
+              }
+            }
           }
+
         }
         return true;
       }
@@ -63,7 +73,7 @@ class Trigger extends Schedule {
     //Forms a map array of projects => environments and revision ids from the queue by parsing each line of the queue string
     protected function readQueue($queue)
     {
-      $projectYmlList = array('revision');
+      $projectYmlList = array();
       $file = fopen($queue, "r") or exit("Unable to open file!");
       while(!feof($file)){
         $lineinQueue = fgets($file);
@@ -74,8 +84,8 @@ class Trigger extends Schedule {
         $revisionId = substr($lineinQueue, strrpos($lineinQueue, "ID") + 3, strlen($lineinQueue));
         //add the project name to the array (if we haven't already,there could be multiple pushes per minute)
         if(!in_array($projectName, $projectYmlList) && strlen($projectName)>0){
-          $projectYmlList[$projectName] = $environmentName;
-          $projectYmlList['revision'] = $revisionId;
+          $projectYmlList[$projectName][$environmentName] = $revisionId;
+          var_dump($projectYmlList);
         }
       }
       fclose($file);
@@ -83,6 +93,7 @@ class Trigger extends Schedule {
 
     }
 
+    //Adds the revision id to the output filename if output formatting is specified
     protected function additionalParamsStringBuilder($additionalBehatParameters, $revisionId){
       if($additionalBehatParameters==null){
         return null;
