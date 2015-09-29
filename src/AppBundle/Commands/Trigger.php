@@ -37,7 +37,6 @@ class Trigger extends Schedule {
       }
       //Check if there are tests scheduled, i.e., queue file is not empty
       if (file_get_contents($bhQ.'.txt') != ''){
-        echo 'hello';
         //Array of projects=>environments from the queue
         $projectList = $this->readQueue($bhQ.'.txt');
         //Removed scheduled tests from queue
@@ -48,19 +47,15 @@ class Trigger extends Schedule {
         //Go match the project specified in the command to the settings in projects.yml
         foreach($projectList as $p => $e){
           foreach($e as $env => $rid){
-            echo in_array('behat-params', $projectList[$p]);
             //Check if there are behat-params for the specified project
-            $behatFlags = array();
-            // $behatFlags = in_array('behat-params', $projects[$p]) ? $projects[$p]['behat-params'] : null;
+            $behatFlags = array_key_exists('behat-params', $projects[$p]) ? $projects[$p]['behat-params'] : null;
             if($e == 'all'){
                //Get all the environments for the project from projects.yml
-               foreach($projects[$p]['environments'] as $env){
-                  //  $this->test($p, $projects, $env, $this->additionalParamsStringBuilder($behatFlags, $p['revision']), $p['revision'], $output);
+               foreach($projects[$p]['environments'] as $environment){
+                  //  $this->test($p, $projects, $environment, $this->additionalParamsStringBuilder($behatFlags, $rid), $rid, $output);
                }
             } else {
-              if($p !== 'revision'){
-                $this->test($p, $projects, $e, $this->additionalParamsStringBuilder($behatFlags, $projectList['revision']), $projectList['revision'], $output);
-              }
+                $this->test($p, $projects, $env, $this->additionalParamsStringBuilder($behatFlags, $rid), $rid, $output);
             }
           }
 
@@ -85,7 +80,7 @@ class Trigger extends Schedule {
         //add the project name to the array (if we haven't already,there could be multiple pushes per minute)
         if(!in_array($projectName, $projectYmlList) && strlen($projectName)>0){
           $projectYmlList[$projectName][$environmentName] = $revisionId;
-          var_dump($projectYmlList);
+          // var_dump($projectYmlList);
         }
       }
       fclose($file);
