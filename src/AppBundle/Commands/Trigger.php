@@ -55,7 +55,7 @@ class Trigger extends Schedule {
                   //  $this->test($p, $projects, $environment, $this->additionalParamsStringBuilder($behatFlags, $rid), $rid, $output);
                }
             } else {
-                $this->test($p, $projects, $env, $this->additionalParamsStringBuilder($behatFlags, $rid), $rid, $output);
+                $this->test($p, $projects, $env, $this->additionalParamsStringBuilder($behatFlags, $rid), $output);
             }
           }
 
@@ -108,7 +108,7 @@ class Trigger extends Schedule {
     return $addFlagString;
   }
 
-    protected function test($project, $projects, $env, $additionalParams, $revisionId, $output)
+    protected function test($project, $projects, $env, $additionalParams, $output)
     {
       $behatLocation = $this->getLocation($this->getYamlParser(), 'behat');
       //Run the behat testing command.
