@@ -100,7 +100,7 @@ class Trigger extends Schedule {
           $pathToOutput = substr($param, 0, strrpos($param, "."));
           $fileExtension = substr($param, strrpos($param, "."), strlen($param));
           $addFlagString = $addFlagString . '--' .$flag. ' ' . $pathToOutput.$time.$revisionId.$fileExtension;
-          echo $pathToOutput . ' ' . $fileExtension . "\n";
+          echo $pathToOutput . $fileExtension . "\n";
         } else {
           $addFlagString = $addFlagString . '--' .$flag. ' '.$param;
         }
@@ -117,7 +117,7 @@ class Trigger extends Schedule {
         $this->getLogger()->info(shell_exec($behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml'.$additionalParams));
         foreach($projects[$project]['profiles'] as $r){
           $this->getLogger()->info('Running tests on '.$r.' for '.$project.'...');
-          $this->getLogger()->info(shell_exec($behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml -p '.$r. ' '.$additonalParams));
+          $this->getLogger()->info(shell_exec($behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml -p '.$r. ' '.$additionalParams));
         }
       } else {
         echo shell_exec($behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml');
