@@ -113,11 +113,11 @@ class Trigger extends Schedule {
       $behatLocation = $this->getLocation($this->getYamlParser(), 'behat');
       //Run the behat testing command.
       if($additionalParams){
-        echo shell_exec($behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml'.$addFlag);
-        $this->getLogger()->info(shell_exec($behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml'.$addFlag));
+        echo shell_exec($behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml'.$additionalParams);
+        $this->getLogger()->info(shell_exec($behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml'.$additionalParams));
         foreach($projects[$project]['profiles'] as $r){
           $this->getLogger()->info('Running tests on '.$r.' for '.$project.'...');
-          $this->getLogger()->info(shell_exec($behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml -p '.$r. ' '.$addFlag));
+          $this->getLogger()->info(shell_exec($behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml -p '.$r. ' '.$additonalParams));
         }
       } else {
         echo shell_exec($behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml');
