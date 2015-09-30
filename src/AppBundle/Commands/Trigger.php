@@ -99,8 +99,7 @@ class Trigger extends Schedule {
           $time = date('d-M-His') . "-";
           $pathToOutput = substr($param, 0, strrpos($param, "."));
           $fileExtension = substr($param, strrpos($param, "."), strlen($param));
-          $addFlagString = $addFlagString . '--' .$flag. ' ' . $pathToOutput.$time.$revisionId.$fileExtension;
-          echo $pathToOutput . $fileExtension . "\n";
+          $addFlagString = $addFlagString . ' --' . $flag. ' ' . $pathToOutput.$time.$revisionId.$fileExtension;
         } else {
           $addFlagString = $addFlagString . '--' .$flag. ' '.$param;
         }
