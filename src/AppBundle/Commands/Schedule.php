@@ -107,6 +107,7 @@ class Schedule extends ContainerAwareCommand {
           $projectYmlList = array();
           $this->getLogger()->info('Queued Tests for '.$project.' on branch '.$env);
           $output->writeln('Schedule request complete');
+          echo date('d-M-His');
           fclose($queue);
           return true;
         }

@@ -96,9 +96,10 @@ class Trigger extends Schedule {
       $addFlagString = ' ';
       foreach($additionalBehatParameters as $flag => $param){
         if($flag == 'out'){
+          $time = date('d-M-His') . "-";
           $pathToOutput = substr($param, 0, strrpos($param, "."));
           $fileExtension = substr($param, strrpos($param, "."), strlen($param));
-          $addFlagString = $addFlagString . '--' .$flag. ' ' . $pathToOutput.$revisionId.$fileExtension;
+          $addFlagString = $addFlagString . '--' .$flag. ' ' . $pathToOutput.$time.$revisionId.$fileExtension;
           echo $pathToOutput . ' ' . $fileExtension . "\n";
         } else {
           $addFlagString = $addFlagString . '--' .$flag. ' '.$param;
