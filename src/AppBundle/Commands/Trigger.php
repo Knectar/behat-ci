@@ -99,7 +99,8 @@ class Trigger extends Schedule {
           $time = date('d-M-His') . "-";
           $pathToOutput = substr($param, 0, strrpos($param, "."));
           $fileExtension = substr($param, strrpos($param, "."), strlen($param));
-          $addFlagString = $addFlagString . ' --' . $flag. ' ' . $pathToOutput.$time.$revisionId.$fileExtension;
+          $revisionId = preg_replace('~[\r\n]+~', '', $revisionId);
+          $addFlagString = $addFlagString . ' --' . $flag. ' ' . $pathToOutput.$time.$revisionId.'.html';
         } else {
           $addFlagString = $addFlagString . '--' .$flag. ' '.$param;
         }
@@ -112,6 +113,7 @@ class Trigger extends Schedule {
       $behatLocation = $this->getLocation($this->getYamlParser(), 'behat');
       //Run the behat testing command.
       if($additionalParams){
+        echo $behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml'.$additionalParams;
         echo shell_exec($behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml'.$additionalParams);
         $this->getLogger()->info(shell_exec($behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml'.$additionalParams));
         foreach($projects[$project]['profiles'] as $r){
