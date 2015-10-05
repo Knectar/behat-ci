@@ -1,5 +1,6 @@
 {
     "name": "knectar/behat-ci",
+    "version": "1.1.0",
     "description": "A console application that schedules, generates configurations, and runs behat tests on a server",
     "keywords": [
       "behat",
@@ -12,9 +13,9 @@
     "prefer-stable": true,
     "type": "project",
     "authors": [
-      { "name": "Jacob Geryk", "email": "jacob.geryk@knectar.com" },
-      { "name": "Josh Beauregard", "email": "josh.beaureg@gmail.com" },
-      { "name": "Adam Wellen", "email": "adam.wellen@knectar.com" }
+      { "name": "Jacob Geryk", "email": "jacob.geryk@knectar.com", "role": "Senior Developer" },
+      { "name": "Josh Beauregard", "email": "josh.beaureg@gmail.com", "role": "Project Director/Developer" },
+      { "name": "Adam Wellen", "email": "adam.wellen@knectar.com", "role": "Editor" }
     ],
   "support": {
     "issue que": "https://github.com/Knectar/behat-ci/issues"

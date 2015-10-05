@@ -6,4 +6,4 @@ locations:
   projects.yml: projects.yml
   profiles.yml: profiles.yml
   ##Absolute path of the behat binary
-  behat: /home/sites/.composer/vendor/bin
+  behat: /home/josh/.composer/vendor/bin
