@@ -1,6 +1,5 @@
 {
     "name": "knectar/behat-ci",
-    "version": "1.1.0",
     "description": "A console application that schedules, generates configurations, and runs behat tests on a server",
     "keywords": [
       "behat",
@@ -35,7 +34,14 @@
         "symfony/monolog-bundle": "~2.4",
         "incenteev/composer-parameter-handler": "~2.0",
         "symfony/console": "^2.7",
+        "behat/behat": "~2.5",
+        "behat/mink": "1.5.*@stable",
+        "behat/mink-extension": "2.1.0",
         "symfony/yaml": "^2.7"
+    },
+    "suggest": {
+        "behat/mink-goutte-driver": "*",
+        "behat/mink-selenium2-driver": "*"
     },
     "config": {
         "bin-dir": "bin"
