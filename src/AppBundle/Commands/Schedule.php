@@ -28,7 +28,7 @@ class Schedule extends ContainerAwareCommand {
   }
 
   //Grabs locations from settings.yml and confirms existance of files at their specified paths
-  protected function getLocation($yamlParser, $file){
+  protected function getLocation($yamlParser, $file, $output){
     switch($file){
       case 'behat':
         // set defaults from settings.yml
@@ -38,12 +38,14 @@ class Schedule extends ContainerAwareCommand {
             'projects.yml' => 'projects.yml',
             'profiles.yml' => 'profiles.yml',
             'behat' => '/home/josh/.composer/vendor/bin',
-            'project_base' => '/srv/www'
+            'project_base' => '/srv/www/'
           ),
         );
-        // 
         $config = array_merge($config, $this->getYamlParser()->parse(file_get_contents(dirname(__FILE__) . '/../../../settings.yml')));
-        $this->formatOutput($config);
+        if ($output->isDebug()) {
+          $output->writeln("Settings:");
+          $output->writeln(var_export($config, true));
+        }
         $location = $config['locations']['behat'] === '/home/sites/.composer/vendor/bin' ? $_SERVER['HOME'].'/.composer/vendor/bin': $config['locations']['behat'];
         if(!file_exists($location.'/behat')){
           $this->getLogger()->info('Behat not found at '.$location.'. Please set the absolute path to your behat binary in settings.yml');
@@ -182,7 +184,7 @@ class Schedule extends ContainerAwareCommand {
             if(array_key_exists('features', $projects[$project]['environments'][$env])){
               array_push($profiles['default']['suites']['default']['paths'], $projects[$project]['environments'][$env]['features']);
             } else {
-              array_push($profiles['default']['suites']['default']['paths'], '/srv/www/'.$project.'/'.$env.'/.behat');
+              array_push($profiles['default']['suites']['default']['paths'], $config['locations']['project_base'] . $project.'/'.$env.'/.behat');
             }
             //Checks if drupal root specified (Behat 3)
             if(array_key_exists('Drupal\DrupalExtension', $profiles['default'])){
@@ -195,7 +197,7 @@ class Schedule extends ContainerAwareCommand {
             $profiles['default']['suites']['default']['paths'] = $projects[$project]['environments'][$env]['features'];
           } else {
             //Fill in path to the features directory of the project
-            $profiles['default']['paths']['features'] = '/srv/www/'.$project.'/'.$env.'/.behat';
+            $profiles['default']['paths']['features'] = $config['locations']['project_base'] . $project.'/'.$env.'/.behat';
           }
 
         }
