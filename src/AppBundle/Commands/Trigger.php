@@ -52,10 +52,10 @@ class Trigger extends Schedule {
             if($e == 'all'){
                //Get all the environments for the project from projects.yml
                foreach($projects[$p]['environments'] as $environment){
-                  //  $this->test($p, $projects, $environment, $this->additionalParamsStringBuilder($behatFlags, $rid), $rid, $output);
+                   $this->test($p, $projects, $environment, $this->additionalParamsStringBuilder($behatFlags, $rid, $environment), $rid, $output);
                }
             } else {
-                $this->test($p, $projects, $env, $this->additionalParamsStringBuilder($behatFlags, $rid), $output);
+                $this->test($p, $projects, $env, $this->additionalParamsStringBuilder($behatFlags, $rid, $env), $output);
             }
           }
 
@@ -89,7 +89,7 @@ class Trigger extends Schedule {
     }
 
     //Adds the revision id to the output filename if output formatting is specified
-    protected function additionalParamsStringBuilder($additionalBehatParameters, $revisionId){
+    protected function additionalParamsStringBuilder($additionalBehatParameters, $revisionId, $environment){
       if($additionalBehatParameters==null){
         return null;
       }
@@ -100,7 +100,7 @@ class Trigger extends Schedule {
           $pathToOutput = substr($param, 0, strrpos($param, "."));
           $fileExtension = substr($param, strrpos($param, "."), strlen($param));
           $revisionId = preg_replace('~[\r\n]+~', '', $revisionId);
-          $addFlagString = $addFlagString . ' --' . $flag. ' ' . $pathToOutput.$time.$revisionId.'.html';
+          $addFlagString = $addFlagString . ' --' . $flag. ' ' . $pathToOutput'-'.$environment.'-'.$time.$revisionId.'.html';
         } else {
           $addFlagString = $addFlagString . '--' .$flag. ' '.$param;
         }
