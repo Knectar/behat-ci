@@ -57,10 +57,10 @@ class Trigger extends Schedule
                     if ($e == 'all') {
                        //Get all the environments for the project from projects.yml
                         foreach ($projects[$p]['environments'] as $environment) {
-                            $this->test($p, $projects, $environment, $this->additionalParamsStringBuilder($behatFlags, $rid, $environment), $rid, $output);
+                            $this->test($p, $projects, $environment, $this->additionalParamsStringBuilder($behatFlags, $rid, $environment), $rid);
                         }
                     } else {
-                        $this->test($p, $projects, $env, $this->additionalParamsStringBuilder($behatFlags, $rid, $env), $output);
+                        $this->test($p, $projects, $env, $this->additionalParamsStringBuilder($behatFlags, $rid, $env));
                     }
                 }
 
@@ -106,7 +106,7 @@ class Trigger extends Schedule
                 $time = date('YmdHis');
                 $pathToOutput = substr($param, 0, strrpos($param, "."));
                 $fileExtension = substr($param, strrpos($param, "."), strlen($param));
-                $revisionId = substr(preg_replace('~[\r\n]+~', '', $revisionIda, 0, 5));
+                $revisionId = substr(preg_replace('~[\r\n]+~', '', $revisionId, 0, 5));
                 $addFlagString = $addFlagString.' --'.$flag.' '.$pathToOutput.'-'.$environment.'-'.$time.'-'.$revisionId.'.html';
             } else {
                 $addFlagString = $addFlagString.'--'.$flag.' '.$param;
@@ -116,7 +116,7 @@ class Trigger extends Schedule
         return $addFlagString;
     }
 
-    protected function test($project, $projects, $env, $additionalParams, $output)
+    protected function test($project, $projects, $env, $additionalParams)
     {
         $behatLocation = $this->getLocation($this->getYamlParser(), 'behat');
       //Run the behat testing command.
