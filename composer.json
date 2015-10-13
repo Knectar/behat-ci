@@ -36,7 +36,7 @@
         "symfony/console": "^2.7",
         "behat/behat": "3.*",
         "behat/mink": "1.5.*@stable",
-        "behat/mink-extension": "2.1.0",
+        "behat/mink-extension": "*@dev",
         "symfony/yaml": "^2.7"
     },
     "suggest": {
