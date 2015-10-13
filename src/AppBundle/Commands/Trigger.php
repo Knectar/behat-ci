@@ -172,7 +172,7 @@ class Trigger extends Schedule
     {
             $payload = [];
         if ($target !== null) {
-            $payload['channel'] = $channel;
+            $payload['channel'] = $target;
         }
             $payload['text'] = $message;
             $payload['username'] = $username;
