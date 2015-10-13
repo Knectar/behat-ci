@@ -22,7 +22,8 @@
     "autoload": {
         "psr-4": {
             "": "src/",
-            "SymfonyStandard\\": "app/SymfonyStandard/"
+            "SymfonyStandard\\": "app/SymfonyStandard/",
+            "Notify\\": "src/Notify" 
         }
     },
     "bin": [
