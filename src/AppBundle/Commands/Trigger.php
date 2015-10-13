@@ -128,14 +128,14 @@ class Trigger extends Schedule
             if (array_key_exists('endpoint', $projects[$project]['slack'])) {
                 fwrite($config, 'Config::$SLACKWEBHOOK = '.$projects[$project]['slack']['endpoint'].'\n');
             } else {
-              echo 'No slack endpoint set for notifications in projects.yml for '.$project;
-              $this->getLogger()->info('No slack endpoint set for notifications in projects.yml for '.$project);
+                echo 'No slack endpoint set for notifications in projects.yml for '.$project;
+                $this->getLogger()->info('No slack endpoint set for notifications in projects.yml for '.$project);
             }
             if (array_key_exists('user', $projects[$project]['slack'])) {
                 fwrite($config, 'Config::$SLACKUSERNAME = '.$projects[$project]['slack']['user'].'\n');
             } else {
-              echo 'No slack user set for notifications in projects.yml for '.$project;
-              $this->getLogger()->info('No slack user set for notifications in projects.yml for '.$project);
+                echo 'No slack user set for notifications in projects.yml for '.$project;
+                $this->getLogger()->info('No slack user set for notifications in projects.yml for '.$project);
             }
             if (array_key_exists('target', $projects[$project]['slack'])) {
                 $slackTarget = $projects[$project]['slack']['target'];
@@ -148,9 +148,9 @@ class Trigger extends Schedule
             echo shell_exec($behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml'.$additionalParams);
             $this->getLogger()->info(shell_exec($behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml'.$additionalParams));
             foreach ($projects[$project]['profiles'] as $r) {
-              if ($notifications) {
-                  Notify\Slack::send('Testing of '.$project.' running on '.$r.' starting..', $slackTarget);
-              }
+                if ($notifications) {
+                    Notify\Slack::send('Testing of '.$project.' running on '.$r.' starting..', $slackTarget);
+                }
                 $this->getLogger()->info('Running tests on '.$r.' for '.$project.'...');
                 $this->getLogger()->info(shell_exec($behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml -p '.$r.' '.$additionalParams));
                 if ($notifications) {
@@ -179,10 +179,9 @@ class Trigger extends Schedule
     protected function notifyEmail($project, $projects, $subject)
     {
         $emails = $projects[$project]['notify']['email'];
-        foreach($emails as $e) {
-          Notify\Email::send($e, $subject, 'Tests have been run');
+        foreach ($emails as $e) {
+            Notify\Email::send($e, $subject, 'Tests have been run');
         }
 
     }
-
 }
