@@ -123,7 +123,7 @@ class Trigger extends Schedule
         $projects = $this->getYamlParser()->parse(file_get_contents($projectsLocation));
         $notifications = array_key_exists('notify', $projects[$project]) ? true : false;
         if ($notifications && array_key_exists('slack', $projects[$project]['notify'])) {
-            echo 'notifications\n';
+            fwrite($config, '<?php'."\n".'namespace Notify;'."\n"."Config::$EMAIL = true;\n"."Config::$SLACK = true;\n\n" )
             $config = fopen('Config.php', "w");
             if (array_key_exists('endpoint', $projects[$project]['slack'])) {
                 fwrite($config, 'Config::$SLACKWEBHOOK = '.$projects[$project]['slack']['endpoint'].'\n');
@@ -140,6 +140,7 @@ class Trigger extends Schedule
             if (array_key_exists('target', $projects[$project]['slack'])) {
                 $slackTarget = $projects[$project]['slack']['target'];
             }
+            fwrite($config, "\n ?>");
         }
         $behatLocation = $this->getLocation($this->getYamlParser(), 'behat');
         //Run the behat testing command.
