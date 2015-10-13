@@ -106,7 +106,7 @@ class Trigger extends Schedule
                 $time = date('YmdHis');
                 $pathToOutput = substr($param, 0, strrpos($param, "."));
                 $fileExtension = substr($param, strrpos($param, "."), strlen($param));
-                $revisionId = substr(preg_replace('~[\r\n]+~', '', $revisionId, 0, 5));
+                $revisionId = substr(preg_replace('~[\r\n]+~', '', $revisionId), 0, 5);
                 $addFlagString = $addFlagString.' --'.$flag.' '.$pathToOutput.'-'.$environment.'-'.$time.'-'.$revisionId.'.html';
             } else {
                 $addFlagString = $addFlagString.'--'.$flag.' '.$param;
