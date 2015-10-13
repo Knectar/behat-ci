@@ -12,6 +12,9 @@ use Symfony\Component\Yaml\Parser;
 use Symfony\Component\Yaml\Exception\ParseException;
 use Symfony\Component\Yaml\Dumper;
 
+/**
+ * Triggers tests that have been scheduled to run.
+ */
 class Trigger extends Schedule
 {
 
@@ -34,6 +37,7 @@ class Trigger extends Schedule
             $bhQ = $config['locations']['queue'];
         } catch (ParseException $e) {
             printf("Unable to parse the YAML string: %s", $e->getMessage());
+
             return false;
         }
       //Check if there are tests scheduled, i.e., queue file is not empty
@@ -61,6 +65,7 @@ class Trigger extends Schedule
                 }
 
             }
+
             return true;
         }
 
@@ -79,20 +84,20 @@ class Trigger extends Schedule
             $environmentName = substr($lineinQueue, $pStringOffsetEnd + 1, strrpos($lineinQueue, ".yml") - $pStringOffsetEnd -1);
             $revisionId = substr($lineinQueue, strrpos($lineinQueue, "ID") + 3, strlen($lineinQueue));
           //add the project name to the array (if we haven't already,there could be multiple pushes per minute)
-            if (!in_array($projectName, $projectYmlList) && strlen($projectName)>0) {
+            if (!in_array($projectName, $projectYmlList) && strlen($projectName) > 0) {
                 $projectYmlList[$projectName][$environmentName] = $revisionId;
               // var_dump($projectYmlList);
             }
         }
         fclose($file);
-        return $projectYmlList;
 
+        return $projectYmlList;
     }
 
     //Adds the revision id to the output filename if output formatting is specified
     protected function additionalParamsStringBuilder($additionalBehatParameters, $revisionId, $environment)
     {
-        if ($additionalBehatParameters==null) {
+        if ($additionalBehatParameters == null) {
             return null;
         }
         $addFlagString = ' ';
@@ -101,12 +106,13 @@ class Trigger extends Schedule
                 $time = date('YmdHis');
                 $pathToOutput = substr($param, 0, strrpos($param, "."));
                 $fileExtension = substr($param, strrpos($param, "."), strlen($param));
-                $revisionId = substr(preg_replace('~[\r\n]+~', '', $revisionIda, 0,5));
-                $addFlagString = $addFlagString . ' --' . $flag . ' ' . $pathToOutput . '-' . $environment . '-' . $time . '-' . $revisionId . '.html';
+                $revisionId = substr(preg_replace('~[\r\n]+~', '', $revisionIda, 0, 5));
+                $addFlagString = $addFlagString.' --'.$flag.' '.$pathToOutput.'-'.$environment.'-'.$time.'-'.$revisionId.'.html';
             } else {
                 $addFlagString = $addFlagString.'--'.$flag.' '.$param;
             }
         }
+
         return $addFlagString;
     }
 
