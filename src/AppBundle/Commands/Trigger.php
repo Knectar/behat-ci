@@ -118,27 +118,26 @@ class Trigger extends Schedule
 
     protected function test($project, $projects, $env, $additionalParams)
     {
-        $slackTarget = '#whitetest';
         $projectsLocation = $this->getLocation($this->getYamlParser(), 'projects.yml');
         $projects = $this->getYamlParser()->parse(file_get_contents($projectsLocation));
         $notifications = array_key_exists('notify', $projects[$project]) ? true : false;
         if ($notifications && array_key_exists('slack', $projects[$project]['notify'])) {
             fwrite($config, '<?php'."\n".'namespace Notify;'."\n"."Config::$EMAIL = true;\n"."Config::$SLACK = true;\n\n" )
             $config = fopen('Config.php', "w");
-            if (array_key_exists('endpoint', $projects[$project]['slack'])) {
-                fwrite($config, 'Config::$SLACKWEBHOOK = '.$projects[$project]['slack']['endpoint'].'\n');
+            if (array_key_exists('endpoint', $projects[$project]['notify']['slack'])) {
+                fwrite($config, 'Config::$SLACKWEBHOOK = '.$projects[$project]['notify']['slack']['endpoint'].'\n');
             } else {
-              echo 'No slack endpoint set for notifications in projects.yml for '.$project;
-              $this->getLogger()->info('No slack endpoint set for notifications in projects.yml for '.$project);
+                echo 'No slack endpoint set for notifications in projects.yml for '.$project;
+                $this->getLogger()->info('No slack endpoint set for notifications in projects.yml for '.$project);
             }
-            if (array_key_exists('user', $projects[$project]['slack'])) {
-                fwrite($config, 'Config::$SLACKUSERNAME = '.$projects[$project]['slack']['user'].'\n');
+            if (array_key_exists('user', $projects[$project]['notify']['slack'])) {
+                fwrite($config, 'Config::$SLACKUSERNAME = '.$projects[$project]['notify']['slack']['user'].'\n');
             } else {
-              echo 'No slack user set for notifications in projects.yml for '.$project;
-              $this->getLogger()->info('No slack user set for notifications in projects.yml for '.$project);
+                echo 'No slack user set for notifications in projects.yml for '.$project;
+                $this->getLogger()->info('No slack user set for notifications in projects.yml for '.$project);
             }
-            if (array_key_exists('target', $projects[$project]['slack'])) {
-                $slackTarget = $projects[$project]['slack']['target'];
+            if (array_key_exists('target', $projects[$project]['notify']['slack'])) {
+                $slackTarget = $projects[$project]['notify']['slack']['target'];
             }
             fwrite($config, "\n ?>");
         }
@@ -149,9 +148,9 @@ class Trigger extends Schedule
             echo shell_exec($behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml'.$additionalParams);
             $this->getLogger()->info(shell_exec($behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml'.$additionalParams));
             foreach ($projects[$project]['profiles'] as $r) {
-              if ($notifications) {
-                  Notify\Slack::send('Testing of '.$project.' running on '.$r.' starting..', $slackTarget);
-              }
+                if ($notifications) {
+                    Notify\Slack::send('Testing of '.$project.' running on '.$r.' starting..', $slackTarget);
+                }
                 $this->getLogger()->info('Running tests on '.$r.' for '.$project.'...');
                 $this->getLogger()->info(shell_exec($behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml -p '.$r.' '.$additionalParams));
                 if ($notifications) {
@@ -180,10 +179,9 @@ class Trigger extends Schedule
     protected function notifyEmail($project, $projects, $subject)
     {
         $emails = $projects[$project]['notify']['email'];
-        foreach($emails as $e) {
-          Notify\Email::send($e, $subject, 'Tests have been run');
+        foreach ($emails as $e) {
+            Notify\Email::send($e, $subject, 'Tests have been run');
         }
 
     }
-
 }
