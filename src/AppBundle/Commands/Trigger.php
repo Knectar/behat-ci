@@ -106,7 +106,7 @@ class Trigger extends Schedule
                 $time = date('YmdHis');
                 $pathToOutput = substr($param, 0, strrpos($param, "."));
                 $fileExtension = substr($param, strrpos($param, "."), strlen($param));
-                $revisionId = substr(preg_replace('~[\r\n]+~', '', $revisionIda, 0, 5));
+                $revisionId = substr(preg_replace('~[\r\n]+~', '', $revisionId), 0, 5);
                 $addFlagString = $addFlagString.' --'.$flag.' '.$pathToOutput.'-'.$environment.'-'.$time.'-'.$revisionId.'.html';
             } else {
                 $addFlagString = $addFlagString.'--'.$flag.' '.$param;
@@ -118,15 +118,45 @@ class Trigger extends Schedule
 
     protected function test($project, $projects, $env, $additionalParams, $output)
     {
+        $slackTarget = '#whitetest';
+        $projectsLocation = $this->getLocation($this->getYamlParser(), 'projects.yml');
+        $projects = $this->getYamlParser()->parse(file_get_contents($projectsLocation));
+        $notifications = array_key_exists('notify', $projects[$project]) ? true : false;
+        if ($notifications && array_key_exists('slack', $projects[$project]['notify'])) {
+            echo 'notifications\n';
+            $config = fopen('Config.php', "w");
+            if (array_key_exists('endpoint', $projects[$project]['slack'])) {
+                fwrite($config, 'Config::$SLACKWEBHOOK = '.$projects[$project]['slack']['endpoint'].'\n');
+            } else {
+              echo 'No slack endpoint set for notifications in projects.yml for '.$project;
+              $this->getLogger()->info('No slack endpoint set for notifications in projects.yml for '.$project);
+            }
+            if (array_key_exists('user', $projects[$project]['slack'])) {
+                fwrite($config, 'Config::$SLACKUSERNAME = '.$projects[$project]['slack']['user'].'\n');
+            } else {
+              echo 'No slack user set for notifications in projects.yml for '.$project;
+              $this->getLogger()->info('No slack user set for notifications in projects.yml for '.$project);
+            }
+            if (array_key_exists('target', $projects[$project]['slack'])) {
+                $slackTarget = $projects[$project]['slack']['target'];
+            }
+        }
         $behatLocation = $this->getLocation($this->getYamlParser(), 'behat');
-      //Run the behat testing command.
+        //Run the behat testing command.
         if ($additionalParams) {
             echo $behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml'.$additionalParams;
             echo shell_exec($behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml'.$additionalParams);
             $this->getLogger()->info(shell_exec($behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml'.$additionalParams));
             foreach ($projects[$project]['profiles'] as $r) {
+              if ($notifications) {
+                  Notify\Slack::send('Testing of '.$project.' running on '.$r.' starting..', $slackTarget);
+              }
                 $this->getLogger()->info('Running tests on '.$r.' for '.$project.'...');
                 $this->getLogger()->info(shell_exec($behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml -p '.$r.' '.$additionalParams));
+                if ($notifications) {
+                    notifyEmail($project, $projects, 'Testing of '.$project.' running on '.$r.' complete');
+                    Notify\Slack::send('Testing of '.$project.' running on '.$r.' complete', $slackTarget);
+                }
             }
         } else {
             echo shell_exec($behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml');
@@ -134,10 +164,25 @@ class Trigger extends Schedule
             foreach ($projects[$project]['profiles'] as $r) {
                 $this->getLogger()->info('Running tests on '.$r.' for '.$project.'...');
                 $this->getLogger()->info(shell_exec($behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml -p '.$r));
+                if ($notifications) {
+                    notifyEmail($project, $projects, 'Testing of '.$project.' running on '.$r.' complete');
+                    Notify\Slack::send('Testing of '.$project.' running on '.$r.' complete');
+                }
             }
         }
 
       //Remove the file after tests have been run
         shell_exec('rm /tmp/'.$project.'_'.$env.'.yml');
+
     }
+
+    protected function notifyEmail($project, $projects, $subject)
+    {
+        $emails = $projects[$project]['notify']['email'];
+        foreach($emails as $e) {
+          Notify\Email::send($e, $subject, 'Tests have been run');
+        }
+
+    }
+
 }

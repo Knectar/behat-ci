@@ -37,7 +37,8 @@
         "behat/behat": "~3.0",
         "behat/mink": "1.5.*@stable",
         "behat/mink-extension": "2.1.0",
-        "symfony/yaml": "^2.7"
+        "symfony/yaml": "^2.7",
+        "noveth/notify": "^0.2.5"
     },
     "suggest": {
         "behat/mink-goutte-driver": "*",
