@@ -12,9 +12,6 @@ use Symfony\Component\Yaml\Parser;
 use Symfony\Component\Yaml\Exception\ParseException;
 use Symfony\Component\Yaml\Dumper;
 
-
-require_once __DIR__ . "/../../../vendor/noveth/notify/src/Notify/Slack.php";
-use Notify\Slack;
 /**
  * Triggers tests that have been scheduled to run.
  */
@@ -124,26 +121,6 @@ class Trigger extends Schedule
         $projectsLocation = $this->getLocation($this->getYamlParser(), 'projects.yml');
         $projects = $this->getYamlParser()->parse(file_get_contents($projectsLocation));
         $notifications = array_key_exists('notify', $projects[$project]) ? true : false;
-        if ($notifications && array_key_exists('slack', $projects[$project]['notify'])) {
-            fwrite($config, '<?php'."\n".'namespace Notify;'."\n"."Config::$EMAIL = true;\n"."Config::$SLACK = true;\n\n" );
-            $config = fopen('Config.php', "w");
-            if (array_key_exists('endpoint', $projects[$project]['notify']['slack'])) {
-                fwrite($config, 'Config::$SLACKWEBHOOK = '.$projects[$project]['notify']['slack']['endpoint'].'\n');
-            } else {
-                echo 'No slack endpoint set for notifications in projects.yml for '.$project;
-                $this->getLogger()->info('No slack endpoint set for notifications in projects.yml for '.$project);
-            }
-            if (array_key_exists('user', $projects[$project]['notify']['slack'])) {
-                fwrite($config, 'Config::$SLACKUSERNAME = '.$projects[$project]['notify']['slack']['user'].'\n');
-            } else {
-                echo 'No slack user set for notifications in projects.yml for '.$project;
-                $this->getLogger()->info('No slack user set for notifications in projects.yml for '.$project);
-            }
-            if (array_key_exists('target', $projects[$project]['notify']['slack'])) {
-                $slackTarget = $projects[$project]['notify']['slack']['target'];
-            }
-            fwrite($config, "\n ?>");
-        }
         $behatLocation = $this->getLocation($this->getYamlParser(), 'behat');
         //Run the behat testing command.
         if ($additionalParams) {
@@ -152,13 +129,13 @@ class Trigger extends Schedule
             $this->getLogger()->info(shell_exec($behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml'.$additionalParams));
             foreach ($projects[$project]['profiles'] as $r) {
                 if ($notifications) {
-                    Notify\Slack::send('Testing of '.$project.' running on '.$r.' starting..', $slackTarget);
+                    $this->slack('Testing of '.$project.' running on '.$r.' starting..', $projects[$project]['notify']['slack']['user'], $projects[$project]['notify']['slack']['endpoint'], $projects[$project]['notify']['slack']['target']);
                 }
                 $this->getLogger()->info('Running tests on '.$r.' for '.$project.'...');
                 $this->getLogger()->info(shell_exec($behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml -p '.$r.' '.$additionalParams));
                 if ($notifications) {
                     notifyEmail($project, $projects, 'Testing of '.$project.' running on '.$r.' complete');
-                    Notify\Slack::send('Testing of '.$project.' running on '.$r.' complete', $slackTarget);
+                    $this->slack('Testing of '.$project.' running on '.$r.' complete', $projects[$project]['notify']['slack']['user'], $projects[$project]['notify']['slack']['endpoint'], $projects[$project]['notify']['slack']['target']);
                 }
             }
         } else {
@@ -169,7 +146,7 @@ class Trigger extends Schedule
                 $this->getLogger()->info(shell_exec($behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml -p '.$r));
                 if ($notifications) {
                     notifyEmail($project, $projects, 'Testing of '.$project.' running on '.$r.' complete');
-                    Notify\Slack::send('Testing of '.$project.' running on '.$r.' complete');
+                    $this->slack('Testing of '.$project.' running on '.$r.' complete', $projects[$project]['notify']['slack']['user'], $projects[$project]['notify']['slack']['endpoint'], $projects[$project]['notify']['slack']['target']);
                 }
             }
         }
@@ -186,5 +163,30 @@ class Trigger extends Schedule
             Notify\Email::send($e, $subject, 'Tests have been run');
         }
 
+    }
+
+    /**
+     * Send Slack notification.
+     * */
+    protected function slack($message, $username, $endpoint, $target = null)
+    {
+            $payload = [];
+        if ($target !== null) {
+            $payload['channel'] = $channel;
+        }
+            $payload['text'] = $message;
+            $payload['username'] = $username;
+            // You can get your webhook endpoint from your Slack settings
+            $ch = curl_init($endpoint);
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+            curl_setopt($ch, CURLOPT_POSTFIELDS, 'payload='.json_encode($payload));
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            $result = curl_exec($ch);
+            curl_close($ch);
+        if ($result === 'ok') {
+            return true;
+        }
+
+            return false;
     }
 }
