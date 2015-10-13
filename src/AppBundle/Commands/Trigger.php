@@ -12,6 +12,9 @@ use Symfony\Component\Yaml\Parser;
 use Symfony\Component\Yaml\Exception\ParseException;
 use Symfony\Component\Yaml\Dumper;
 
+
+require_once __DIR__ . "/../../../vendor/noveth/notify/src/Notify/Slack.php";
+use Notify\Slack;
 /**
  * Triggers tests that have been scheduled to run.
  */
@@ -122,7 +125,7 @@ class Trigger extends Schedule
         $projects = $this->getYamlParser()->parse(file_get_contents($projectsLocation));
         $notifications = array_key_exists('notify', $projects[$project]) ? true : false;
         if ($notifications && array_key_exists('slack', $projects[$project]['notify'])) {
-            fwrite($config, '<?php'."\n".'namespace Notify;'."\n"."Config::$EMAIL = true;\n"."Config::$SLACK = true;\n\n" )
+            fwrite($config, '<?php'."\n".'namespace Notify;'."\n"."Config::$EMAIL = true;\n"."Config::$SLACK = true;\n\n" );
             $config = fopen('Config.php', "w");
             if (array_key_exists('endpoint', $projects[$project]['notify']['slack'])) {
                 fwrite($config, 'Config::$SLACKWEBHOOK = '.$projects[$project]['notify']['slack']['endpoint'].'\n');
