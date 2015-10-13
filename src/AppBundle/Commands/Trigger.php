@@ -57,10 +57,10 @@ class Trigger extends Schedule
                     if ($e == 'all') {
                        //Get all the environments for the project from projects.yml
                         foreach ($projects[$p]['environments'] as $environment) {
-                            $this->test($p, $projects, $environment, $this->additionalParamsStringBuilder($behatFlags, $rid, $environment), $rid, $output);
+                            $this->test($p, $projects, $environment, $this->additionalParamsStringBuilder($behatFlags, $rid, $environment), $rid);
                         }
                     } else {
-                        $this->test($p, $projects, $env, $this->additionalParamsStringBuilder($behatFlags, $rid, $env), $output);
+                        $this->test($p, $projects, $env, $this->additionalParamsStringBuilder($behatFlags, $rid, $env));
                     }
                 }
 
@@ -116,7 +116,7 @@ class Trigger extends Schedule
         return $addFlagString;
     }
 
-    protected function test($project, $projects, $env, $additionalParams, $output)
+    protected function test($project, $projects, $env, $additionalParams)
     {
         $slackTarget = '#whitetest';
         $projectsLocation = $this->getLocation($this->getYamlParser(), 'projects.yml');
