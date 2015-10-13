@@ -1,6 +1,6 @@
 behat-ci
 ================
-
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/Knectar/behat-ci/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/Knectar/behat-ci/?branch=master)
 
 ## Introduction
 Behat continuous integration CLI is an efficient way to manage Behat configurations and have Behat testing run automatically when a project is updated. It will also generate a custom Behat.yml configuration file for you. All you have to do is specify the profiles.
