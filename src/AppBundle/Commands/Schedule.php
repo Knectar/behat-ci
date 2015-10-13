@@ -150,7 +150,7 @@ class Schedule extends ContainerAwareCommand {
           //gets profiles.yml as array
           $profiles = $this->getYamlParser()->parse(file_get_contents($profilesLocation));
         } catch (ParseException $e) {
-            $this->getLogger()->error("Unable to parse the YAML string: %s");
+            $this->getLogger()->error("Unable to parse the YAML string: %s", $e->getMessage());
             printf("Unable to parse the YAML string: %s", $e->getMessage());
         }
 
