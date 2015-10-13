@@ -134,7 +134,7 @@ class Trigger extends Schedule
                 $this->getLogger()->info('Running tests on '.$r.' for '.$project.'...');
                 $this->getLogger()->info(shell_exec($behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml -p '.$r.' '.$additionalParams));
                 if ($notifications) {
-                    notifyEmail($project, $projects, 'Testing of '.$project.' running on '.$r.' complete');
+  #                  notifyEmail($project, $projects, 'Testing of '.$project.' running on '.$r.' complete');
                     $this->slack('Testing of '.$project.' running on '.$r.' complete', $projects[$project]['notify']['slack']['user'], $projects[$project]['notify']['slack']['endpoint'], $projects[$project]['notify']['slack']['target']);
                 }
             }
@@ -145,7 +145,7 @@ class Trigger extends Schedule
                 $this->getLogger()->info('Running tests on '.$r.' for '.$project.'...');
                 $this->getLogger()->info(shell_exec($behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml -p '.$r));
                 if ($notifications) {
-                    notifyEmail($project, $projects, 'Testing of '.$project.' running on '.$r.' complete');
+ #                   notifyEmail($project, $projects, 'Testing of '.$project.' running on '.$r.' complete');
                     $this->slack('Testing of '.$project.' running on '.$r.' complete', $projects[$project]['notify']['slack']['user'], $projects[$project]['notify']['slack']['endpoint'], $projects[$project]['notify']['slack']['target']);
                 }
             }
@@ -155,7 +155,7 @@ class Trigger extends Schedule
         shell_exec('rm /tmp/'.$project.'_'.$env.'.yml');
 
     }
-
+/**
     protected function notifyEmail($project, $projects, $subject)
     {
         $emails = $projects[$project]['notify']['email'];
@@ -164,7 +164,7 @@ class Trigger extends Schedule
         }
 
     }
-
+*/
     /**
      * Send Slack notification.
      * */
