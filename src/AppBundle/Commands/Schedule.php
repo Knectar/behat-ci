@@ -23,12 +23,11 @@ class Schedule extends ContainerAwareCommand
         return $logger;
     }
 
-    protected function getYamlParser()
-    {
-      //Create yml parser
-        $yaml = new Parser();
-        return $yaml;
-    }
+  protected function getYamlParser(){
+    //Create yml parser
+    $yaml = new Parser();
+    return $yaml;
+  }
 
   //Grabs locations from settings.yml and confirms existance of files at their specified paths
     protected function getLocation($yamlParser, $file)
@@ -36,7 +35,7 @@ class Schedule extends ContainerAwareCommand
         $output = new ConsoleOutput();
         switch ($file) {
             case 'behat':
-                $config = array_merge($config, $this->getYamlParser()->parse(file_get_contents(dirname(__FILE__).'/../../../settings.yml')));
+                $config = $this->getYamlParser()->parse(file_get_contents(dirname(__FILE__) . '/../../../settings.yml'));
                 $location = $config['locations']['behat'] === '/home/sites/.composer/vendor/bin' ? $_SERVER['HOME'].'/.composer/vendor/bin': $config['locations']['behat'];
                 if (!file_exists($location.'/behat')) {
                     $this->getLogger()->info('Behat not found at '.$location.'. Please set the absolute path to your behat binary in settings.yml');
