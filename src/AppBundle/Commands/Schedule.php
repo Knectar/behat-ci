@@ -203,7 +203,7 @@ class Schedule extends ContainerAwareCommand
             if (array_key_exists('formatters', $profiles['default']) && array_key_exists($projects[$project]['twigOutputPath'])) {
                 $profiles['default']['formatters']['html']['output_path'] = $projects[$project]['twigOutputPath'];
                 if(array_key_exists(['emuse\BehatHTMLFormatter\BehatHTMLFormatterExtension'], $projects['default']['extensions'])) {
-                    $projects['default']['extensions']['emuse\BehatHTMLFormatter\BehatHTMLFormatterExtension']['file_name'] = $project.'-'.date('y\-\m\-\d\Gis');
+                    $projects['default']['extensions']['emuse\BehatHTMLFormatter\BehatHTMLFormatterExtension']['file_name'] = $project.'-'.$env.'-'.date('y\-\m\-\d\Gis');
             }
         } else {
             //Fill in the baseurl (Behat 2)

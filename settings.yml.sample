@@ -7,3 +7,5 @@ locations:
   profiles.yml: profiles.yml
   ##Absolute path of the behat binary
   behat: /home/josh/.composer/vendor/bin
+  ##
+  fileoutputBaseURL: http://mytests.com/path/to/project
