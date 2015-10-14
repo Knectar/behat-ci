@@ -157,18 +157,15 @@ class Schedule extends ContainerAwareCommand
             $projects = $this->getYamlParser()->parse(file_get_contents($projectsLocation));
             if (!array_key_exists($project, $projects)) {
                 $output->writeln('<error>.'.$project.' is not defined in projects.yml!<error>');
-                $this->getLogger()->info($project.' is not defined in projects.yml!');
                 die();
             }
             if (!array_key_exists($env, $projects[$project]['environments']) && $env != 'all') {
                 $output->writeln('<error>.'.$env.' is not a defined environment for project '.$project.'<error>');
-                $this->getLogger()->info($env.' is not a defined environment for project '.$project);
                 die();
             }
             //gets profiles.yml as array
             $profiles = $this->getYamlParser()->parse(file_get_contents($profilesLocation));
         } catch (ParseException $e) {
-            $this->getLogger()->error("Unable to parse the YAML string: %s");
             printf("Unable to parse the YAML string: ".$e->getMessage());
         }
 
@@ -176,7 +173,9 @@ class Schedule extends ContainerAwareCommand
 
         return true;
     }
-
+    /**
+     * Generates behat config file based on projects and profiles.
+     */
     protected function generate($project, $env, $profiles, $projects, OutputInterface $output)
     {
       //Key-value matching variables in project to profile and then to the output yml
@@ -200,7 +199,11 @@ class Schedule extends ContainerAwareCommand
             $profiles['default']['extensions']['Behat\MinkExtension\Extension']['base_url'] = $projects[$project]['environments'][$env]['base_url'];
             if (array_key_exists('features', $projects[$project]['environments'][$env])) {
                 $profiles['default']['suites']['default']['paths'] = $projects[$project]['environments'][$env]['features'];
-            } else {
+            }
+            elseif (array_key_exists('alias', $projects[$project][$env])) {
+                $profiles['default']['paths']['features'] = '/srv/www/'.$project.'/'.$projects[$project]['environments'][$env]['alias'].'/.behat';
+            }
+            else {
               //Fill in path to the features directory of the project
                 $profiles['default']['paths']['features'] = '/srv/www/'.$project.'/'.$env.'/.behat';
             }
@@ -208,7 +211,7 @@ class Schedule extends ContainerAwareCommand
         }
         //Add the default profile to the generated yaml
         $behatYaml['default'] = $profiles['default'];
-        //Get the list of tests to be run and add each of their profiles to the generated yaml
+        //Get the list of tests to be run and add each of their profiles to the generated yaml.
         $profileList = $projects[$project]['profiles'];
         foreach ($profileList as $t) {
             $profiles[$t]['extensions']['Behat\MinkExtension']['selenium2']['capabilities']['name'] = $project.' '.$env.' on '.$t;
