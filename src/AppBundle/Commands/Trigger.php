@@ -72,6 +72,10 @@ class Trigger extends Schedule
     }
 
     //Forms a map array of projects => environments and revision ids from the queue by parsing each line of the queue string
+
+    /**
+     * @param string $queue
+     */
     protected function readQueue($queue)
     {
         $projectYmlList = array();
@@ -116,6 +120,9 @@ class Trigger extends Schedule
         return $addFlagString;
     }
 
+    /**
+     * @param null|string $additionalParams
+     */
     protected function test($project, $projects, $env, $additionalParams)
     {
         $projectsLocation = $this->getLocation($this->getYamlParser(), 'projects.yml');

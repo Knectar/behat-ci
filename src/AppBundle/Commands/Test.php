@@ -33,8 +33,8 @@ class Test extends Trigger {
         $this->formatOutput($output);
         //Check if behat binary is found
         $this->getLocation($this->getYamlParser(), 'behat');
-        $p=$input->getArgument('project_name');
-        $b=$input->getOption('branch');
+        $p = $input->getArgument('project_name');
+        $b = $input->getOption('branch');
         shell_exec('bh schedule '.$p.' -b '.$b);
         shell_exec('bh trigger');
       }

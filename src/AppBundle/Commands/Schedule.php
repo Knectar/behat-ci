@@ -2,6 +2,7 @@
 
 namespace AppBundle\Commands;
 
+use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputArgument;
@@ -11,13 +12,29 @@ use Symfony\Component\Yaml\Parser;
 use Symfony\Component\Yaml\Exception\ParseException;
 use Symfony\Component\Yaml\Dumper;
 use Psr\Log\LoggerInterface;
-use BehatCi;
 
 /**
  * Generates behat config file and schedules test in queue.
  */
 class Schedule extends BehatCi
 {
+
+    protected function getLogger()
+    {
+        //create logger
+        $logger = $this->getContainer()->get('logger');
+
+        return $logger;
+    }
+
+    protected function getYamlParser()
+    {
+        //Create yml parser
+        $yaml = new Parser();
+
+        return $yaml;
+    }
+
     /**
      * Grabs locations from settings.yml and confirms existance of files at their specified paths.
      * @param Parser $yamlParser
@@ -27,8 +44,8 @@ class Schedule extends BehatCi
     protected function getLocation($yamlParser, $file)
     {
         switch ($file) {
-            case 'behat':
-                $config = Settings();
+            $config = Settings();
+            case 'behat':    
                 $location = $config['locations']['behat'] === '/home/sites/.composer/vendor/bin' ? $_SERVER['HOME'].'/.composer/vendor/bin': $config['locations']['behat'];
                 if (!file_exists($location.'/behat')) {
                     $this->getLogger()->info('Behat not found at '.$location.'. Please set the absolute path to your behat binary in settings.yml');
@@ -44,9 +61,6 @@ class Schedule extends BehatCi
                     $this->getLogger()->debug('Found '.$file.' in /etc/behat-ci/');
                     $location = '/etc/behat-ci/'.$file;
                 } else {
-                  //If the paths aren't set by the user, they must be in the app directory.
-                  //Read from file paths set in settings.yml.
-                    $config = $this->getYamlParser()->parse(file_get_contents(dirname(__FILE__).'/../../../settings.yml'));
                     $location = ($config['locations'][$file] === $file ? dirname(__FILE__).'/../../../'.$file : $config['locations'][$file]);
                     $this->getLogger()->debug($file.' found in '.$location.' per settings.yml');
                 }
@@ -91,14 +105,13 @@ class Schedule extends BehatCi
 
         if ($this->readConfigFiles($project, $env, $input, $output)) {
             try {
-              //read queue location from config.yml
-                $config =  $this->getYamlParser()->parse(file_get_contents(dirname(__FILE__).'/../../../settings.yml'));
+                $config = Settings();
                 $bhQ = $config['locations']['queue'];
             } catch (ParseException $e) {
                 $this->getLogger()->error("Unable to parse the YAML string: %s");
                 printf("Unable to parse the YAML string: %s", $e->getMessage());
             }
-          //write timestamp, project name, instance to queue.
+            //write timestamp, project name, instance to queue.
 
             $queue = fopen($bhQ.'.txt', "a") or die("Unable to open file!");
             if ($revision) {
@@ -171,9 +184,9 @@ class Schedule extends BehatCi
         $behatYaml = array();
 
         if (array_key_exists('suites', $profiles['default'])) {
-          //Fill in the baseurl (Behat 3)
+            //Fill in the baseurl (Behat 3)
             $profiles['default']['extensions']['Behat\MinkExtension']['base_url'] = $projects[$project]['environments'][$env]['base_url'];
-          //Fill in path to the features directory of the project in default suite
+            //Fill in path to the features directory of the project in default suite
             if (array_key_exists('features', $projects[$project]['environments'][$env])) {
                 array_push($profiles['default']['suites']['default']['paths'], $projects[$project]['environments'][$env]['features']);
             } else {
@@ -183,14 +196,20 @@ class Schedule extends BehatCi
             if (array_key_exists('Drupal\DrupalExtension', $profiles['default'])) {
                 $profiles['default']['extensions']['Drupal\DrupalExtension']['drupal']['drupal_root'] = $projects[$project]['environments'][$env]['drupal_root'];
             }
+            //Check for Twig output/emuse BehatHTMLFormatter
+            if (array_key_exists('formatters', $profiles['default']) && array_key_exists($projects[$project]['twigOutputPath'])) {
+                $profiles['default']['formatters']['html']['output_path'] = $projects[$project]['twigOutputPath'];
+                if(array_key_exists(['emuse\BehatHTMLFormatter\BehatHTMLFormatterExtension'], $projects['default']['extensions'])) {
+                    $projects['default']['extensions']['emuse\BehatHTMLFormatter\BehatHTMLFormatterExtension']['file_name'] = $project.'-'.date('y\-\m\-\d\Gis');
+            }
         } else {
-          //Fill in the baseurl (Behat 2)
+            //Fill in the baseurl (Behat 2)
             $profiles['default']['extensions']['Behat\MinkExtension\Extension']['base_url'] = $projects[$project]['environments'][$env]['base_url'];
             if (array_key_exists('features', $projects[$project]['environments'][$env])) {
                 $profiles['default']['suites']['default']['paths'] = $projects[$project]['environments'][$env]['features'];
             }
             elseif (array_key_exists('alias', $projects[$project][$env])) {
-		// if there is an alais load the alais's files not the enviroments alais
+        // if there is an alais load the alais's files not the enviroments alais
                 $profiles['default']['paths']['features'] = '/srv/www/'.$project.'/'.$projects[$project]['environments'][$env]['alias'].'/.behat';
             }
             else {
