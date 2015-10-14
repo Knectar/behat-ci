@@ -12,6 +12,7 @@ use Symfony\Component\Yaml\Parser;
 use Symfony\Component\Yaml\Exception\ParseException;
 use Symfony\Component\Yaml\Dumper;
 use Psr\Log\LoggerInterface;
+use BehatCi;
 
 /**
  * Generates behat config file and schedules test in queue.
