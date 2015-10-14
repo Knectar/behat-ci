@@ -200,9 +200,9 @@ class Schedule extends ContainerAwareCommand
                 $profiles['default']['extensions']['Drupal\DrupalExtension']['drupal']['drupal_root'] = $projects[$project]['environments'][$env]['drupal_root'];
             }
             //Check for Twig output/emuse BehatHTMLFormatter
-            if (array_key_exists('formatters', $profiles['default']) && array_key_exists($projects[$project]['twigOutputPath'])) {
+            if (array_key_exists('formatters', $profiles['default']) && array_key_exists('twigOutputPath', $projects[$project])) {
                 $profiles['default']['formatters']['html']['output_path'] = $projects[$project]['twigOutputPath'];
-                if(array_key_exists(['emuse\BehatHTMLFormatter\BehatHTMLFormatterExtension'], $projects['default']['extensions'])) {
+                if(array_key_exists('emuse\BehatHTMLFormatter\BehatHTMLFormatterExtension', $profiles['default']['extensions'])) {
                     $projects['default']['extensions']['emuse\BehatHTMLFormatter\BehatHTMLFormatterExtension']['file_name'] = $project.'-'.$env.'-'.date('y\-\m\-\d\Gis');
             }
         } else {
@@ -243,6 +243,7 @@ class Schedule extends ContainerAwareCommand
         }
         $output->writeln('<header>Generated config file for '.$project.' for env '.$env.' in /tmp</header>');
 
+        }
     }
 
     /**
