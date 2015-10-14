@@ -23,6 +23,7 @@ class Schedule extends ContainerAwareCommand
     {
       //create logger
         $logger = $this->getContainer()->get('logger');
+
         return $logger;
     }
 
@@ -30,10 +31,13 @@ class Schedule extends ContainerAwareCommand
     {
       //Create yml parser
         $yaml = new Parser();
+
         return $yaml;
     }
 
-  //Grabs locations from settings.yml and confirms existance of files at their specified paths
+    /**
+     * Grabs locations from settings.yml and confirms existance of files at their specified paths.
+     */
     protected function getLocation($yamlParser, $file)
     {
         switch ($file) {
@@ -44,6 +48,7 @@ class Schedule extends ContainerAwareCommand
                     $this->getLogger()->info('Behat not found at '.$location.'. Please set the absolute path to your behat binary in settings.yml');
                     die('Behat not found at '.$location.'. Please set the absolute path to your behat binary in settings.yml');
                 }
+                break;
             case 'profiles.yml':
             case 'projects.yml':
                 if (file_exists($_SERVER['HOME'].'/'.$file)) {
@@ -59,7 +64,9 @@ class Schedule extends ContainerAwareCommand
                     $location = ($config['locations'][$file] === $file ? dirname(__FILE__).'/../../../'.$file : $config['locations'][$file]);
                     $this->getLogger()->debug($file.' found in '.$location.' per settings.yml');
                 }
+                break;
         }
+
         return $location;
 
     }
@@ -117,10 +124,11 @@ class Schedule extends ContainerAwareCommand
             $this->getLogger()->info('Queued Tests for '.$project.' on branch '.$env);
             $output->writeln('Schedule request complete');
             fclose($queue);
+
             return true;
         }
-        return false;
 
+        return false;
     }
 
     protected function readConfigFiles($project, $env, InputInterface $input, OutputInterface $output)
@@ -152,7 +160,7 @@ class Schedule extends ContainerAwareCommand
                 $this->getLogger()->info($project.' is not defined in projects.yml!');
                 die();
             }
-            if (!array_key_exists($env, $projects[$project]['environments']) && $env!='all') {
+            if (!array_key_exists($env, $projects[$project]['environments']) && $env != 'all') {
                 $output->writeln('<error>.'.$env.' is not a defined environment for project '.$project.'<error>');
                 $this->getLogger()->info($env.' is not a defined environment for project '.$project);
                 die();
@@ -222,12 +230,14 @@ class Schedule extends ContainerAwareCommand
 
     }
 
+    /**
+     * Formatting terminal output.
+     */
     protected function formatOutput(OutputInterface $output)
     {
-        //Formatting terminal output
-        $header_style = new OutputFormatterStyle('white', 'green', array('bold'));
-        $error_style = new OutputFormatterStyle('white', 'red', array('bold'));
-        $output->getFormatter()->setStyle('header', $header_style);
-        $output->getFormatter()->setStyle('err', $error_style);
+        $headerStyle = new OutputFormatterStyle('white', 'green', array('bold'));
+        $errorStyle = new OutputFormatterStyle('white', 'red', array('bold'));
+        $output->getFormatter()->setStyle('header', $headerStyle);
+        $output->getFormatter()->setStyle('err', $errorStyle);
     }
 }
