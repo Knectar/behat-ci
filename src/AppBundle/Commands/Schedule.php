@@ -203,7 +203,7 @@ class Schedule extends ContainerAwareCommand
         //Get the list of tests to be run and add each of their profiles to the generated yaml
         $profileList = $projects[$project]['profiles'];
         foreach ($profileList as $t) {
-            $profiles[$t]['extensions']['Behat\MinkExtension\Extension']['selenium2']['capabilities']['name'] = $project.' '.$env.' on '.$t;
+            $profiles[$t]['extensions']['Behat\MinkExtension']['selenium2']['capabilities']['name'] = $project.' '.$env.' on '.$t;
             $behatYaml[$t] = $profiles[$t];
         }
         //Create the yml dumper to convert the array to string
