@@ -2,7 +2,6 @@
 
 namespace AppBundle\Commands;
 
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputArgument;
@@ -12,29 +11,13 @@ use Symfony\Component\Yaml\Parser;
 use Symfony\Component\Yaml\Exception\ParseException;
 use Symfony\Component\Yaml\Dumper;
 use Psr\Log\LoggerInterface;
+use BehatCi;
 
 /**
  * Generates behat config file and schedules test in queue.
  */
-class Schedule extends ContainerAwareCommand
+class Schedule extends BehatCi
 {
-
-    protected function getLogger()
-    {
-        //create logger
-        $logger = $this->getContainer()->get('logger');
-
-        return $logger;
-    }
-
-    protected function getYamlParser()
-    {
-        //Create yml parser
-        $yaml = new Parser();
-
-        return $yaml;
-    }
-
     /**
      * Grabs locations from settings.yml and confirms existance of files at their specified paths.
      * @param Parser $yamlParser
@@ -45,7 +28,7 @@ class Schedule extends ContainerAwareCommand
     {
         switch ($file) {
             case 'behat':
-                $config = $this->getYamlParser()->parse(file_get_contents(dirname(__FILE__).'/../../../settings.yml'));
+                $config = Settings();
                 $location = $config['locations']['behat'] === '/home/sites/.composer/vendor/bin' ? $_SERVER['HOME'].'/.composer/vendor/bin': $config['locations']['behat'];
                 if (!file_exists($location.'/behat')) {
                     $this->getLogger()->info('Behat not found at '.$location.'. Please set the absolute path to your behat binary in settings.yml');
@@ -136,7 +119,7 @@ class Schedule extends ContainerAwareCommand
 
     protected function readConfigFiles($project, $env, InputInterface $input, OutputInterface $output)
     {
-        $config =  $this->getYamlParser()->parse(file_get_contents(dirname(__FILE__).'/../../../settings.yml'));
+        $config = Settings();
         try {
             $this->getLogger()->info('Schedule Called');
         } catch (Exception $e) {

@@ -1,33 +1,50 @@
 <?php
 /**
- * File gets settings.yml file and makes them into universaly avaible varaibles.
+ * File gets settings.yml file and makes them into universally amiable variables.
  *
  **/
 
-namespace AppBundle;
+namespace BehatCi;
 
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 use Symfony\Component\Yaml\Parser;
 use Symfony\Component\Yaml\Exception\ParseException;
 use Symfony\Component\Yaml\Dumper;
+use Psr\Log\LoggerInterface;
+use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 
 /**
  * Class Settings.
- * Gets settings.yml file and makes them into universaly avaible varaibles.
+ * Gets settings.yml file and makes them into universally amiable variables.
  */
-class Settings
+class BehatCi extends ContainerAwareCommand
 {
     //todo: public $output = new ConsoleOutput();
     private static $yml = null;
     private static $config = null;
 
 
+    protected function getLogger()
+    {
+        //create logger
+        $logger = $this->getContainer()->get('logger');
+
+        return $logger;
+    }
     protected function getYamlParser()
     {
         //Create yml parser
         $yaml = new Parser();
         return $yaml;
     }
-    public function __construct($options)
+    /**
+     *  Returns settings array.
+    */
+    public function settings()
     {
         // set defaults from settings.yml
         $config = [
