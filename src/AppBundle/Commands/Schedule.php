@@ -43,9 +43,9 @@ class Schedule extends BehatCi
      */
     protected function getLocation($yamlParser, $file)
     {
+        $config = Settings();
         switch ($file) {
-            $config = Settings();
-            case 'behat':    
+            case 'behat':
                 $location = $config['locations']['behat'] === '/home/sites/.composer/vendor/bin' ? $_SERVER['HOME'].'/.composer/vendor/bin': $config['locations']['behat'];
                 if (!file_exists($location.'/behat')) {
                     $this->getLogger()->info('Behat not found at '.$location.'. Please set the absolute path to your behat binary in settings.yml');
@@ -240,6 +240,7 @@ class Schedule extends BehatCi
         }
         $output->writeln('<header>Generated config file for '.$project.' for env '.$env.' in /tmp</header>');
 
+        }
     }
 
     /**
