@@ -207,8 +207,8 @@ class Schedule extends BehatCi
                 $profiles['default']['extensions']['Behat\MinkExtension\Extension']['base_url'] = $projects[$project]['environments'][$env]['base_url'];
                 if (array_key_exists('features', $projects[$project]['environments'][$env])) {
                     $profiles['default']['suites']['default']['paths'] = $projects[$project]['environments'][$env]['features'];
-                } elseif (array_key_exists('alias', $projects[$project][$env])) {
-            // if there is an alais load the alais's files not the enviroments alais
+                } elseif (array_key_exists('alias', $projects[$project]['environments'][$env])) {
+                  // if there is an alias load the alais's files not the enviroments alias
                     $profiles['default']['paths']['features'] = '/srv/www/'.$project.'/'.$projects[$project]['environments'][$env]['alias'].'/.behat';
                 } else {
                     //Fill in path to the features directory of the project
