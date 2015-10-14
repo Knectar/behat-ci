@@ -205,6 +205,7 @@ class Schedule extends ContainerAwareCommand
                 if (array_key_exists('emuse\BehatHTMLFormatter\BehatHTMLFormatterExtension', $profiles['default']['extensions'])) {
                     $projects['default']['extensions']['emuse\BehatHTMLFormatter\BehatHTMLFormatterExtension']['file_name'] = $project.'-'.$env.'-'.date('y\-\m\-\d\Gis');
                 }
+              }
             } else {
                 // Fill in the baseurl (Behat 2)
                 $profiles['default']['extensions']['Behat\MinkExtension\Extension']['base_url'] = $projects[$project]['environments'][$env]['base_url'];
