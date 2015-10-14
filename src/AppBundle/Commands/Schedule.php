@@ -242,7 +242,6 @@ class Schedule extends ContainerAwareCommand
             }
             $output->writeln('<header>Generated config file for '.$project.' for env '.$env.' in /tmp</header>');
 
-        }
     }
 
     /**
