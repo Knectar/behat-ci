@@ -1,9 +1,4 @@
 <?php
-/**
- * File gets settings.yml file and makes them into universally amiable variables.
- *
- **/
-
 namespace BehatCi;
 
 use Symfony\Component\Console\Input\InputInterface;
