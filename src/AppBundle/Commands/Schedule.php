@@ -199,6 +199,9 @@ class Schedule extends ContainerAwareCommand
             if (array_key_exists('Drupal\DrupalExtension', $profiles['default'])) {
                 $profiles['default']['extensions']['Drupal\DrupalExtension']['drupal']['drupal_root'] = $projects[$project]['environments'][$env]['drupal_root'];
             }
+            if (array_key_exists('formatters', $profiles['default']) && array_key_exists($projects[$project]['twigOutputPath'])) {
+                $profiles['default']['formatters']['html']['output_path'] = $projects[$project]['twigOutputPath'];
+            }
         } else {
             //Fill in the baseurl (Behat 2)
             $profiles['default']['extensions']['Behat\MinkExtension\Extension']['base_url'] = $projects[$project]['environments'][$env]['base_url'];
