@@ -61,4 +61,3 @@ class BehatCi extends ContainerAwareCommand
         return $config = array_merge($config, $yml);
     }
 }
-

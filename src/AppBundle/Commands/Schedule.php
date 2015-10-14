@@ -12,7 +12,6 @@ use Symfony\Component\Yaml\Parser;
 use Symfony\Component\Yaml\Exception\ParseException;
 use Symfony\Component\Yaml\Dumper;
 use Psr\Log\LoggerInterface;
-use BehatCi;
 
 /**
  * Generates behat config file and schedules test in queue.
@@ -44,7 +43,7 @@ class Schedule extends BehatCi
      */
     protected function getLocation($yamlParser, $file)
     {
-        $config = Settings();
+        $config = $this->settings();
         switch ($file) {
             case 'behat':
                 $location = $config['locations']['behat'] === '/home/sites/.composer/vendor/bin' ? $_SERVER['HOME'].'/.composer/vendor/bin': $config['locations']['behat'];
@@ -106,7 +105,7 @@ class Schedule extends BehatCi
 
         if ($this->readConfigFiles($project, $env, $input, $output)) {
             try {
-                $config = Settings();
+                $config = $this->settings();
                 $bhQ = $config['locations']['queue'];
             } catch (ParseException $e) {
                 $this->getLogger()->error("Unable to parse the YAML string: %s");
@@ -133,7 +132,7 @@ class Schedule extends BehatCi
 
     protected function readConfigFiles($project, $env, InputInterface $input, OutputInterface $output)
     {
-        $config = Settings();
+        $config = $this->Settings();
         try {
             $this->getLogger()->info('Schedule Called');
         } catch (Exception $e) {
