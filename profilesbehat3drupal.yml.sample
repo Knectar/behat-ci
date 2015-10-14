@@ -16,6 +16,13 @@ default:
       base_url:
       goutte: ~
       selenium2: ~
+    emuse\BehatHTMLFormatter\BehatHTMLFormatterExtension:
+      name: html
+      renderer: Twig,Behat2
+      file_name: Index
+      print_args: true
+      print_outp: true
+      loop_break: true
 
 win-chrome:
     extensions:
