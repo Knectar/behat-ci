@@ -21,7 +21,7 @@ class Schedule extends ContainerAwareCommand
 
     protected function getLogger()
     {
-      //create logger
+        //create logger
         $logger = $this->getContainer()->get('logger');
 
         return $logger;
@@ -29,7 +29,7 @@ class Schedule extends ContainerAwareCommand
 
     protected function getYamlParser()
     {
-      //Create yml parser
+        //Create yml parser
         $yaml = new Parser();
 
         return $yaml;
@@ -37,6 +37,9 @@ class Schedule extends ContainerAwareCommand
 
     /**
      * Grabs locations from settings.yml and confirms existance of files at their specified paths.
+     * @param Parser $yamlParser
+     * @param string $file
+     * @return string
      */
     protected function getLocation($yamlParser, $file)
     {
@@ -71,19 +74,19 @@ class Schedule extends ContainerAwareCommand
 
     }
 
-   //configuration of the command's name, arguments, options, etc
+    //configuration of the command's name, arguments, options, etc
     protected function configure()
     {
         $this->setName('schedule')
-           ->setDescription("Writes to bhqueue.txt indicating that tests should be run (also to generate a new configuration file as needed). To be run on beanstalk post-deploy commands with the -e flag specifying environments")
-           ->addArgument('repo_name', InputArgument::REQUIRED, "The name of the project repo (%REPO_NAME% in Beanstalk post-deployment)")
-           ->addOption(
-               'branch',
-               'b',
-               InputOption::VALUE_OPTIONAL,
-               'The environment/branch. use --branch=all for all instances/environments',
-               1
-           )
+            ->setDescription("Writes to bhqueue.txt indicating that tests should be run (also to generate a new configuration file as needed). To be run on beanstalk post-deploy commands with the -e flag specifying environments")
+            ->addArgument('repo_name', InputArgument::REQUIRED, "The name of the project repo (%REPO_NAME% in Beanstalk post-deployment)")
+            ->addOption(
+                'branch',
+                'b',
+                InputOption::VALUE_OPTIONAL,
+                'The environment/branch. use --branch=all for all instances/environments',
+                1
+            )
             ->addOption(
                 'revision',
                 'r',
@@ -157,15 +160,18 @@ class Schedule extends ContainerAwareCommand
             $projects = $this->getYamlParser()->parse(file_get_contents($projectsLocation));
             if (!array_key_exists($project, $projects)) {
                 $output->writeln('<error>.'.$project.' is not defined in projects.yml!<error>');
+                $this->getLogger()->info($project.' is not defined in projects.yml!');
                 die();
             }
             if (!array_key_exists($env, $projects[$project]['environments']) && $env != 'all') {
                 $output->writeln('<error>.'.$env.' is not a defined environment for project '.$project.'<error>');
+                $this->getLogger()->info($env.' is not a defined environment for project '.$project);
                 die();
             }
             //gets profiles.yml as array
             $profiles = $this->getYamlParser()->parse(file_get_contents($profilesLocation));
         } catch (ParseException $e) {
+            $this->getLogger()->error("Unable to parse the YAML string: %s");
             printf("Unable to parse the YAML string: ".$e->getMessage());
         }
 
@@ -178,7 +184,7 @@ class Schedule extends ContainerAwareCommand
      */
     protected function generate($project, $env, $profiles, $projects, OutputInterface $output)
     {
-      //Key-value matching variables in project to profile and then to the output yml
+        //Key-value matching variables in project to profile and then to the output yml
         $behatYaml = array();
 
         if (array_key_exists('suites', $profiles['default'])) {
@@ -201,17 +207,18 @@ class Schedule extends ContainerAwareCommand
                 $profiles['default']['suites']['default']['paths'] = $projects[$project]['environments'][$env]['features'];
             }
             elseif (array_key_exists('alias', $projects[$project][$env])) {
+		// if there is an alais load the alais's files not the enviroments alais
                 $profiles['default']['paths']['features'] = '/srv/www/'.$project.'/'.$projects[$project]['environments'][$env]['alias'].'/.behat';
             }
             else {
-              //Fill in path to the features directory of the project
+                //Fill in path to the features directory of the project
                 $profiles['default']['paths']['features'] = '/srv/www/'.$project.'/'.$env.'/.behat';
             }
 
         }
         //Add the default profile to the generated yaml
         $behatYaml['default'] = $profiles['default'];
-        //Get the list of tests to be run and add each of their profiles to the generated yaml.
+        //Get the list of tests to be run and add each of their profiles to the generated yaml
         $profileList = $projects[$project]['profiles'];
         foreach ($profileList as $t) {
             $profiles[$t]['extensions']['Behat\MinkExtension']['selenium2']['capabilities']['name'] = $project.' '.$env.' on '.$t;
