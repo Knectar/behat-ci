@@ -92,7 +92,9 @@ class Trigger extends Schedule
         return $projectYmlList;
     }
 
-    //Adds the revision id to the output filename if output formatting is specified
+    /**
+     * Adds the revision id to the output filename if output formatting is specified
+    **/
     protected function additionalParamsStringBuilder($additionalBehatParameters, $revisionId, $environment)
     {
         if ($additionalBehatParameters == null) {
@@ -104,8 +106,8 @@ class Trigger extends Schedule
                 $time = date('YmdHis');
                 $pathToOutput = substr($param, 0, strrpos($param, "."));
                 $fileExtension = substr($param, strrpos($param, "."), strlen($param));
-                $revisionId = substr(preg_replace('~[\r\n]+~', '', $revisionId), 0, 5);
-                $addFlagString = $addFlagString.' --'.$flag.' '.$pathToOutput.'-'.$environment.'-'.$time.'-'.$revisionId.'.html';
+                $revisionId = substr(preg_replace('~[\r\n]+~', '', $revisionId), 0, 6);
+                $addFlagString = $addFlagString.' --'.$flag.' '.$pathToOutput.'-'.$environment.'-'.$time.'-'.$revisionId;
             } else {
                 $addFlagString = $addFlagString.'--'.$flag.' '.$param;
             }
@@ -132,7 +134,7 @@ class Trigger extends Schedule
                 $this->getLogger()->info('Running tests on '.$r.' for '.$project.'...');
                 $this->getLogger()->info(shell_exec($behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml -p '.$r.' '.$additionalParams));
                 if ($notifications) {
-    // notifyEmail($project, $projects, 'Testing of '.$project.' running on '.$r.' complete');
+                    // todo: Email($project, $projects, 'Testing of '.$project.' running on '.$r.' complete');
                     $this->slack('Testing of '.$project.' running on '.$r.' complete', $projects[$project]['notify']['slack']['user'], $projects[$project]['notify']['slack']['endpoint'], $projects[$project]['notify']['slack']['target']);
                 }
             }
@@ -143,7 +145,7 @@ class Trigger extends Schedule
                 $this->getLogger()->info('Running tests on '.$r.' for '.$project.'...');
                 $this->getLogger()->info(shell_exec($behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml -p '.$r));
                 if ($notifications) {
-    // notifyEmail($project, $projects, 'Testing of '.$project.' running on '.$r.' complete');
+                    // todo: notifyEmail($project, $projects, 'Testing of '.$project.' running on '.$r.' complete');
                     $this->slack('Testing of '.$project.' running on '.$r.' complete', $projects[$project]['notify']['slack']['user'], $projects[$project]['notify']['slack']['endpoint'], $projects[$project]['notify']['slack']['target']);
                 }
             }
@@ -151,7 +153,6 @@ class Trigger extends Schedule
 
         //Remove the file after tests have been run
         shell_exec('rm /tmp/'.$project.'_'.$env.'.yml');
-
     }
 /**
     protected function notifyEmail($project, $projects, $subject)

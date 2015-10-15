@@ -81,7 +81,9 @@ class Schedule extends BehatCi
         return $location;
     }
 
-    //configuration of the command's name, arguments, options, etc
+    /**
+     * Configuration of the command's name, arguments, options, etc
+     **/
     protected function configure()
     {
         $this->setName('schedule')
@@ -204,7 +206,8 @@ class Schedule extends BehatCi
             if (array_key_exists('formatters', $profiles['default']) && array_key_exists('twigOutputPath', $projects[$project])) {
                 $profiles['default']['formatters']['html']['output_path'] = $projects[$project]['twigOutputPath'];
                 if (array_key_exists('emuse\BehatHTMLFormatter\BehatHTMLFormatterExtension', $profiles['default']['extensions'])) {
-                    $profiles['default']['extensions']['emuse\BehatHTMLFormatter\BehatHTMLFormatterExtension']['file_name'] = $project.'-'.$env.'-'.date('y').'-'.date('m').'-'.date('Gis');
+                    $profiles['default']['extensions']['emuse\BehatHTMLFormatter\BehatHTMLFormatterExtension']['file_name'] = 'index.html';
+                    //$profiles['default']['extensions']['emuse\BehatHTMLFormatter\BehatHTMLFormatterExtension']['file_name'] = $project.'-'.$env.'-'.date('y').'-'.date('m').'-'.date('Gis');
                 }
             } else {
                 // Fill in the baseurl (Behat 2)
