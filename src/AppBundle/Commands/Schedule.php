@@ -3,7 +3,6 @@
 namespace AppBundle\Commands;
 
 use AppBundle\Commands\BehatCi;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputArgument;
@@ -12,7 +11,6 @@ use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 use Symfony\Component\Yaml\Parser;
 use Symfony\Component\Yaml\Exception\ParseException;
 use Symfony\Component\Yaml\Dumper;
-use Psr\Log\LoggerInterface;
 
 /**
  * Generates behat config file and schedules test in queue.
@@ -47,7 +45,7 @@ class Schedule extends BehatCi
         $config = $this->settings();
         switch ($file) {
             case 'behat':
-                $location = $config['locations']['behat'] === '/home/sites/.composer/vendor/bin' ? $_SERVER['HOME'].'/.composer/vendor/bin': $config['locations']['behat'];
+                $location = $config['locations']['behat'] === '/home/sites/.composer/vendor/bin' ? $_SERVER['HOME'].'/.composer/vendor/bin' : $config['locations']['behat'];
                 if (!file_exists($location.'/behat')) {
                     $this->getLogger()->info('Behat not found at '.$location.'. Please set the absolute path to your behat binary in settings.yml');
                     die('Behat not found at '.$location.'. Please set the absolute path to your behat binary in settings.yml');
@@ -139,7 +137,7 @@ class Schedule extends BehatCi
         } catch (Exception $e) {
             $output->writeln('Could not write to /var/log');
         }
-        $behatLocation = $config['locations']['behat'] === '/home/sites/.composer/vendor/bin' ? $_SERVER['HOME'].'/.composer/vendor/bin': $config['locations']['behat'];
+        $behatLocation = $config['locations']['behat'] === '/home/sites/.composer/vendor/bin' ? $_SERVER['HOME'].'/.composer/vendor/bin' : $config['locations']['behat'];
         if (!file_exists($behatLocation.'/behat')) {
             $this->getLogger()->info('Behat not found at '.$behatLocation.'. Please set the absolute path to your behat binary in settings.yml');
             die('Behat not found at '.$behatLocation.'. Please set the absolute path to your behat binary in settings.yml');
