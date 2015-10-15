@@ -3,6 +3,11 @@ namespace AppBundle\Commands;
 
 use Symfony\Component\Yaml\Parser;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 
 /**
  * Class Settings.
@@ -10,7 +15,6 @@ use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
  */
 class BehatCi extends ContainerAwareCommand
 {
-    //todo: public $output = new ConsoleOutput();
     public $yml = null;
     public $config = null;
 
@@ -38,6 +42,15 @@ class BehatCi extends ContainerAwareCommand
         }
          */
         return $config = array_merge($config, (array) $yml);
+    }
+
+    /**
+     * Outputs and error to both the debug log and the terminal
+     */
+    protected function reportError($error, OutputInterface $output)
+    {
+            $this->getLogger()->error($error);
+            $output->writeln('<error> '.$error.'<error>');
     }
 
     /**

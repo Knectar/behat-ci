@@ -12,6 +12,7 @@ use Symfony\Component\Yaml\Parser;
 use Symfony\Component\Yaml\Exception\ParseException;
 use Symfony\Component\Yaml\Dumper;
 
+
 /**
  * Generates behat config file and schedules test in queue.
  */
@@ -46,9 +47,9 @@ class Schedule extends BehatCi
         try {
             switch ($file) {
                 case 'behat':
-                    $location = (file_exists($config['locations']['behat']) ?: $_SERVER['HOME'].'/.composer/vendor/bin/behat');
-                    if (!file_exists($location.'/behat')) {
-                        throw new Exception('Behat not found. Please set the absolute path to your behat binary in settings.yml');
+                    $location = (isset($config['locations']['behat']) ? $config['locations']['behat']: $_SERVER['HOME'].'/.composer/vendor/bin/behat');
+                    if (!file_exists($location)) {
+                        throw new ParseException($file.' not found at '.$location.'. Please set the absolute path to your behat binary in settings.yml');
                     } else {
                         $this->getLogger()->debug($file.' found in '.$location.' per settings.yml');
                     }
@@ -67,14 +68,14 @@ class Schedule extends BehatCi
                           $this->getLogger()->debug($file.' found in '.$location.' per settings.yml');
                     }
                     if (!isset($location)) {
-                        throw new Exception("File: ".$file." not found. \n\nPlease create it in /etc/behat-ci/ ".$file.", or ".$_SERVER['HOME']." . /.behat_ci/".$file);
+                        throw new ParseException("File: ".$file." not found. \n\nPlease create it in /etc/behat-ci/ ".$file.", or ".$_SERVER['HOME']." . /.behat_ci/".$file);
                     }
                     break;
                 default:
                     $location = null;
             }
-        } catch (Exception $e) {
-            $this->getLogger()->error(sprintf("Files: not found: \n %s", $e->getMessage()));
+        } catch (ParseException $e) {
+            $this->getLogger()->error(sprintf("Error: Parsing Files \n %s", $e->getMessage()));
             exit(1);
         }
 
@@ -142,13 +143,14 @@ class Schedule extends BehatCi
     protected function readConfigFiles($project, $env, InputInterface $input, OutputInterface $output)
     {
         $config = $this->Settings();
+        var_dump($config);
         try {
             $this->getLogger()->info('Schedule Called');
         } catch (Exception $e) {
             $output->writeln('Could not write to /var/log');
         }
-        $behatLocation = $config['locations']['behat'] === '/home/sites/.composer/vendor/bin' ? $_SERVER['HOME'].'/.composer/vendor/bin' : $config['locations']['behat'];
-        if (!file_exists($behatLocation.'/behat')) {
+        $behatLocation = $this->getLocation($this->getYamlParser(), 'behat');
+        if (!file_exists($behatLocation)) {
             $this->getLogger()->info('Behat not found at '.$behatLocation.'. Please set the absolute path to your behat binary in settings.yml');
             die('Behat not found at '.$behatLocation.'. Please set the absolute path to your behat binary in settings.yml');
         }
@@ -169,15 +171,13 @@ class Schedule extends BehatCi
                 die();
             }
             if (!array_key_exists($env, $projects[$project]['environments']) && $env != 'all') {
-                $output->writeln('<error>.'.$env.' is not a defined environment for project '.$project.'<error>');
-                $this->getLogger()->info($env.' is not a defined environment for project '.$project);
-                die();
+                throw new ParseException($env.' is not a defined environment for project '.$project.'<error>');
             }
             //gets profiles.yml as array
             $profiles = $this->getYamlParser()->parse(file_get_contents($profilesLocation));
         } catch (ParseException $e) {
-            $this->getLogger()->error("Unable to parse the YAML string: %s");
-            printf("Unable to parse the YAML string: ".$e->getMessage());
+            $this->reportError(sprintf("Unable to parse the YAML string: %s\n", $e->getMessage()), $output);
+            exit(1);
         }
 
         $this->generate($project, $env, $profiles, $projects, $output);
