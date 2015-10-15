@@ -117,25 +117,22 @@ class Trigger extends Schedule
     /**
      * @param null|string $additionalParams
      */
-    protected function test($project, $projects, $env, $additionalParams)
+    protected function test($project, $projects, $env, $additionalParams = null)
     {
         $projectsLocation = $this->getLocation($this->getYamlParser(), 'projects.yml');
         $projects = $this->getYamlParser()->parse(file_get_contents($projectsLocation));
         $notifications = array_key_exists('notify', $projects[$project]) ? true : false;
         $behatLocation = $this->getLocation($this->getYamlParser(), 'behat');
         //Run the behat testing command.
-        if ($additionalParams) {
+        if (!is_null($additionalParams) {
             echo $behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml'.$additionalParams;
             echo shell_exec($behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml'.$additionalParams);
             $this->getLogger()->info(shell_exec($behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml'.$additionalParams));
             foreach ($projects[$project]['profiles'] as $r) {
-                if ($notifications) {
-                    $this->slack('Testing of '.$project.' running on '.$r.' starting..', $projects[$project]['notify']['slack']['user'], $projects[$project]['notify']['slack']['endpoint'], $projects[$project]['notify']['slack']['target']);
-                }
                 $this->getLogger()->info('Running tests on '.$r.' for '.$project.'...');
                 $this->getLogger()->info(shell_exec($behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml -p '.$r.' '.$additionalParams));
                 if ($notifications) {
-    #                  notifyEmail($project, $projects, 'Testing of '.$project.' running on '.$r.' complete');
+    // notifyEmail($project, $projects, 'Testing of '.$project.' running on '.$r.' complete');
                     $this->slack('Testing of '.$project.' running on '.$r.' complete', $projects[$project]['notify']['slack']['user'], $projects[$project]['notify']['slack']['endpoint'], $projects[$project]['notify']['slack']['target']);
                 }
             }
@@ -146,7 +143,7 @@ class Trigger extends Schedule
                 $this->getLogger()->info('Running tests on '.$r.' for '.$project.'...');
                 $this->getLogger()->info(shell_exec($behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml -p '.$r));
                 if ($notifications) {
-    #                   notifyEmail($project, $projects, 'Testing of '.$project.' running on '.$r.' complete');
+    // notifyEmail($project, $projects, 'Testing of '.$project.' running on '.$r.' complete');
                     $this->slack('Testing of '.$project.' running on '.$r.' complete', $projects[$project]['notify']['slack']['user'], $projects[$project]['notify']['slack']['endpoint'], $projects[$project]['notify']['slack']['target']);
                 }
             }
