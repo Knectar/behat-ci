@@ -64,7 +64,7 @@ class Schedule extends BehatCi
                     } else {
                         $location = ($config['locations'][$file] === $file) ?
                           dirname(__FILE__).'/../../../'.$file : $config['locations'][$file];
-                          $this->getLogger()->debug($file.' found in '.$location.' per settings.yml');
+                            $this->getLogger()->debug($file.' found in '.$location.' per settings.yml');
                     }
                     if (!isset($location)) {
                         throw new ParseException("File: ".$file." not found. \n\nPlease create it in /etc/behat-ci/ ".$file.", or ".$_SERVER['HOME']." . /.behat_ci/".$file);
@@ -120,8 +120,8 @@ class Schedule extends BehatCi
             try {
                 $queue = fopen($bhQ.'.txt', "a");
             } catch (Exception $e) {
-                  $this->getLogger()->error(sprintf("Can not find the queue file:\n %s", $e->getMessage));
-                  exit(1);
+                    $this->getLogger()->error(sprintf("Can not find the queue file:\n %s", $e->getMessage));
+                    exit(1);
             }
             if ($revision) {
                 fwrite($queue, '/tmp/'.$project.'_'.$env.'.yml generated and prepared for testing on '.date("D M j G:i:s")." with revision ID ".$revision."\n");
