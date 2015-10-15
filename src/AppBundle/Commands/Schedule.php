@@ -42,10 +42,13 @@ class Schedule extends BehatCi
      */
     protected function getLocation($yamlParser, $file)
     {
+        $location = null;
         $config = $this->settings();
         switch ($file) {
             case 'behat':
-                $location = $config['locations']['behat'] === '/home/sites/.composer/vendor/bin' ? $_SERVER['HOME'].'/.composer/vendor/bin' : $config['locations']['behat'];
+                $location = ($config['locations']['behat'] === '/home/sites/.composer/vendor/bin') ?
+                    $_SERVER['HOME'].'/.composer/vendor/bin':
+                    $config['locations']['behat'];
                 if (!file_exists($location.'/behat')) {
                     $this->getLogger()->info('Behat not found at '.$location.'. Please set the absolute path to your behat binary in settings.yml');
                     die('Behat not found at '.$location.'. Please set the absolute path to your behat binary in settings.yml');
@@ -66,7 +69,7 @@ class Schedule extends BehatCi
                 break;
         }
 
-        return $location;
+        return (!is_null($location)) ? $location : die("Can not find $file");
 
     }
 
@@ -103,16 +106,14 @@ class Schedule extends BehatCi
         $revision = $input->getOption('revision');
 
         if ($this->readConfigFiles($project, $env, $input, $output)) {
-            try {
                 $config = $this->settings();
                 $bhQ = $config['locations']['queue'];
-            } catch (ParseException $e) {
-                $this->getLogger()->error("Unable to parse the YAML string: %s");
-                printf("Unable to parse the YAML string: %s", $e->getMessage());
-            }
             //write timestamp, project name, instance to queue.
-
-            $queue = fopen($bhQ.'.txt', "a") or die("Unable to open file!");
+            try {
+                $queue = fopen($bhQ.'.txt', "a") or die("Unable to open file!");
+            } catch (ParseException $e) {
+                  $this->getLogger()->error(sprintf("Can not find the queue file:\n %s", $e->getMessage));
+            }
             if ($revision) {
                 fwrite($queue, '/tmp/'.$project.'_'.$env.'.yml generated and prepared for testing on '.date("D M j G:i:s")." with revision ID ".$revision."\n");
             } else {
