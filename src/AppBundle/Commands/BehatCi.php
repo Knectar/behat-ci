@@ -17,7 +17,7 @@ class BehatCi extends ContainerAwareCommand
     /**
      *  Returns settings array.
      *  @return array
-    */
+     */
     public function settings()
     {
         // set defaults from settings.yml
