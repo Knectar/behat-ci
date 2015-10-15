@@ -41,8 +41,8 @@ class BehatCi extends ContainerAwareCommand
                 throw new ParseException("Can't access Settings file.");
             }
         } catch (ParseException $e) {
-             $this->getLogger()->error($e->getMessage());
-              exit(1);
+                $this->getLogger()->error($e->getMessage());
+                exit(1);
         }
 
         return array_merge($config, (array) $yml);

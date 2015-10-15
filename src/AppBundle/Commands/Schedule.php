@@ -46,7 +46,7 @@ class Schedule extends BehatCi
         try {
             switch ($file) {
                 case 'behat':
-                    $location = (isset($config['locations']['behat']) ? $config['locations']['behat']: $_SERVER['HOME'].'/.composer/vendor/bin/behat');
+                    $location = (isset($config['locations']['behat']) ? $config['locations']['behat'] : $_SERVER['HOME'].'/.composer/vendor/bin/behat');
                     if (!file_exists($location)) {
                         throw new ParseException($file.' not found at '.$location.'. Please set the absolute path to your behat binary in settings.yml');
                     } else {

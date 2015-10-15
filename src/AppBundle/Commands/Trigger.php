@@ -94,7 +94,7 @@ class Trigger extends Schedule
 
     /**
      * Adds the revision id to the output filename if output formatting is specified
-    **/
+     **/
     protected function additionalParamsStringBuilder($additionalBehatParameters, $revisionId, $environment)
     {
         if ($additionalBehatParameters == null) {
