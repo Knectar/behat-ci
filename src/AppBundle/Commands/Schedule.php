@@ -2,6 +2,7 @@
 
 namespace AppBundle\Commands;
 
+use AppBundle\Commands\BehatCi;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -197,39 +198,39 @@ class Schedule extends BehatCi
                 $profiles['default']['extensions']['Drupal\DrupalExtension']['drupal']['drupal_root'] = $projects[$project]['environments'][$env]['drupal_root'];
             }
             //Check for Twig output/emuse BehatHTMLFormatter
-            if (array_key_exists('formatters', $profiles['default']) && array_key_exists($projects[$project]['twigOutputPath'])) {
+            if (array_key_exists('formatters', $profiles['default']) && array_key_exists('twigOutputPath', $projects[$project])) {
                 $profiles['default']['formatters']['html']['output_path'] = $projects[$project]['twigOutputPath'];
-                if (array_key_exists(['emuse\BehatHTMLFormatter\BehatHTMLFormatterExtension'], $projects['default']['extensions'])) {
-                    $projects['default']['extensions']['emuse\BehatHTMLFormatter\BehatHTMLFormatterExtension']['file_name'] = $project.'-'.date('y\-\m\-\d\Gis');
+                if (array_key_exists('emuse\BehatHTMLFormatter\BehatHTMLFormatterExtension', $profiles['default']['extensions'])) {
+                    $profiles['default']['extensions']['emuse\BehatHTMLFormatter\BehatHTMLFormatterExtension']['file_name'] = $project.'-'.$env.'-'.date('y').'-'.date('m').'-'.date('Gis');
                 }
             } else {
-                //Fill in the baseurl (Behat 2)
+                // Fill in the baseurl (Behat 2)
                 $profiles['default']['extensions']['Behat\MinkExtension\Extension']['base_url'] = $projects[$project]['environments'][$env]['base_url'];
                 if (array_key_exists('features', $projects[$project]['environments'][$env])) {
                     $profiles['default']['suites']['default']['paths'] = $projects[$project]['environments'][$env]['features'];
-                } elseif (array_key_exists('alias', $projects[$project]['environments'][$env])) {
-                  // if there is an alias load the alais's files not the enviroments alias
+                } elseif (array_key_exists('alias', $projects[$project][$env])) {
+                    // if there is an alias load the alais's files not the enviroments alais
                     $profiles['default']['paths']['features'] = '/srv/www/'.$project.'/'.$projects[$project]['environments'][$env]['alias'].'/.behat';
                 } else {
-                    //Fill in path to the features directory of the project
+                    // Fill in path to the features directory of the project
                     $profiles['default']['paths']['features'] = '/srv/www/'.$project.'/'.$env.'/.behat';
                 }
 
             }
-        //Add the default profile to the generated yaml
+            //Add the default profile to the generated yaml
             $behatYaml['default'] = $profiles['default'];
-        //Get the list of tests to be run and add each of their profiles to the generated yaml
+            //Get the list of tests to be run and add each of their profiles to the generated yaml
             $profileList = $projects[$project]['profiles'];
             foreach ($profileList as $t) {
                 $profiles[$t]['extensions']['Behat\MinkExtension']['selenium2']['capabilities']['name'] = $project.' '.$env.' on '.$t;
                 $behatYaml[$t] = $profiles[$t];
             }
-        //Create the yml dumper to convert the array to string
+            //Create the yml dumper to convert the array to string
             $dumper = new Dumper();
-        //Dump into yaml string
+            //Dump into yaml string
             $behatYamlString = $dumper->dump($behatYaml, 7);
 
-        //create the yml file in /tmp
+            //create the yml file in /tmp
             file_put_contents('/tmp/'.$project.'_'.$env.'.yml', $behatYamlString);
             if (file_exists('/tmp/'.$project.'_'.$env.'.yml')) {
                 $this->getLogger()->info('Generated the file /tmp/'.$project.'_'.$env.'.yml');
@@ -237,7 +238,6 @@ class Schedule extends BehatCi
                 $this->getLogger()->info('FAILED the file /tmp/'.$project.'_'.$env.'.yml');
             }
             $output->writeln('<header>Generated config file for '.$project.' for env '.$env.' in /tmp</header>');
-
         }
     }
 

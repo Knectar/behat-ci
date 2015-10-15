@@ -1,5 +1,5 @@
 <?php
-namespace BehatCi;
+namespace AppBundle\Commands;
 
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -19,9 +19,8 @@ use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 class BehatCi extends ContainerAwareCommand
 {
     //todo: public $output = new ConsoleOutput();
-    private static $yml = null;
-    private static $config = null;
-
+    var $yml;
+    var $config;
 
     protected function getLogger()
     {
@@ -58,6 +57,6 @@ class BehatCi extends ContainerAwareCommand
             $output->writeln(var_export($config, true));
         }
          */
-        return $config = array_merge($config, $yml);
+        return $config = array_merge($config, (array) $yml);
     }
 }
