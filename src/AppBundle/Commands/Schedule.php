@@ -195,7 +195,7 @@ class Schedule extends BehatCi
             if (array_key_exists('features', $projects[$project]['environments'][$env])) {
                 array_push($profiles['default']['suites']['default']['paths'], $projects[$project]['environments'][$env]['features']);
             } else {
-                array_push($profiles['default']['suites']['default']['paths'], '/srv/www/'.$project.'/'.$env.'/.behat');
+                array_push($profiles['default']['suites']['default']['paths'], $this->config['locations']['project_base'].$project.'/'.$env.'/.behat');
             }
             //Checks if drupal root specified (Behat 3)
             if (array_key_exists('Drupal\DrupalExtension', $profiles['default'])) {
@@ -206,7 +206,6 @@ class Schedule extends BehatCi
                 $profiles['default']['formatters']['html']['output_path'] = $projects[$project]['twigOutputPath'];
                 if (array_key_exists('emuse\BehatHTMLFormatter\BehatHTMLFormatterExtension', $profiles['default']['extensions'])) {
                     $profiles['default']['extensions']['emuse\BehatHTMLFormatter\BehatHTMLFormatterExtension']['file_name'] = 'index';
-                    //$profiles['default']['extensions']['emuse\BehatHTMLFormatter\BehatHTMLFormatterExtension']['file_name'] = $project.'-'.$env.'-'.date('y').'-'.date('m').'-'.date('Gis');
                 }
             } else {
                 // Fill in the baseurl (Behat 2)
@@ -215,10 +214,10 @@ class Schedule extends BehatCi
                     $profiles['default']['suites']['default']['paths'] = $projects[$project]['environments'][$env]['features'];
                 } elseif (array_key_exists('alias', $projects[$project][$env])) {
                     // if there is an alias load the alais's files not the enviroments alais
-                    $profiles['default']['paths']['features'] = '/srv/www/'.$project.'/'.$projects[$project]['environments'][$env]['alias'].'/.behat';
+                    $profiles['default']['paths']['features'] = $this->config['locations']['project_base'].$project.'/'.$projects[$project]['environments'][$env]['alias'].'/.behat';
                 } else {
                     // Fill in path to the features directory of the project
-                    $profiles['default']['paths']['features'] = '/srv/www/'.$project.'/'.$env.'/.behat';
+                    $profiles['default']['paths']['features'] = $this->config['locations']['project_base'].$project.'/'.$env.'/.behat';
                 }
 
             }

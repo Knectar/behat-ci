@@ -23,7 +23,7 @@ class BehatCi extends ContainerAwareCommand
      *  Returns settings array.
      *  @return array
      */
-    public function settings()
+    public function settings($key = null)
     {
         // set defaults from settings.yml
         $config = [
@@ -44,8 +44,9 @@ class BehatCi extends ContainerAwareCommand
                 $this->getLogger()->error($e->getMessage());
                 exit(1);
         }
+        $config = array_merge($config, (array) $yml);
 
-        return array_merge($config, (array) $yml);
+        return $config;
     }
 
     /**
