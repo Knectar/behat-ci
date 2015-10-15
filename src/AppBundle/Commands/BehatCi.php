@@ -35,16 +35,16 @@ class BehatCi extends ContainerAwareCommand
                 'project_base' => '/srv/www/',
             ],
         ];
-//print (file_get_contents(dirname(__FILE__).'/../../../settings.yml'));
         try {
             $yml = (is_null($this->yml)) ? $this->getYamlParser()->parse(file_get_contents(dirname(__FILE__).'/../../../settings.yml')) : $this->yml;
-            if(is_null($yml)) {
+            if (is_null($yml)) {
                 throw new ParseException("Can't access Settings file.");
             }
-        } catch(ParseException $e) {
+        } catch (ParseException $e) {
              $this->getLogger()->error($e->getMessage());
               exit(1);
         }
+
         return $config = array_merge($config, (array) $yml);
     }
 
