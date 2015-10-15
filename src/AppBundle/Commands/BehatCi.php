@@ -1,15 +1,7 @@
 <?php
 namespace AppBundle\Commands;
 
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 use Symfony\Component\Yaml\Parser;
-use Symfony\Component\Yaml\Exception\ParseException;
-use Symfony\Component\Yaml\Dumper;
-use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 
 /**
