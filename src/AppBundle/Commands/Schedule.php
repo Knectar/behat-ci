@@ -42,35 +42,45 @@ class Schedule extends BehatCi
      */
     protected function getLocation($yamlParser, $file)
     {
-        $location = null;
         $config = $this->settings();
-        switch ($file) {
-            case 'behat':
-                $location = ($config['locations']['behat'] === '/home/sites/.composer/vendor/bin') ?
-                    $_SERVER['HOME'].'/.composer/vendor/bin':
-                    $config['locations']['behat'];
-                if (!file_exists($location.'/behat')) {
-                    $this->getLogger()->info('Behat not found at '.$location.'. Please set the absolute path to your behat binary in settings.yml');
-                    die('Behat not found at '.$location.'. Please set the absolute path to your behat binary in settings.yml');
-                }
-                break;
-            case 'profiles.yml':
-            case 'projects.yml':
-                if (file_exists($_SERVER['HOME'].'/'.$file)) {
-                    $this->getLogger()->debug('Found '.$file.' in '.$_SERVER['HOME']);
-                    $location = $_SERVER['HOME'].'/'.$file;
-                } elseif (file_exists('/etc/behat-ci/'.$file)) {
-                    $this->getLogger()->debug('Found '.$file.' in /etc/behat-ci/');
-                    $location = '/etc/behat-ci/'.$file;
-                } else {
-                    $location = ($config['locations'][$file] === $file ? dirname(__FILE__).'/../../../'.$file : $config['locations'][$file]);
-                    $this->getLogger()->debug($file.' found in '.$location.' per settings.yml');
-                }
-                break;
+        try {
+            switch ($file) {
+                case 'behat':
+                    $location = ($config['locations']['behat'] === '/home/sites/.composer/vendor/bin') ?
+                        $_SERVER['HOME'].'/.composer/vendor/bin':
+                        $config['locations']['behat'];
+                    if (!file_exists($location.'/behat')) {
+                        throw new Exception('Behat not found at '.$location.'. Please set the absolute path to your behat binary in settings.yml');
+                    } else {
+                        $this->getLogger()->debug($file.' found in '.$location.' per settings.yml');
+                    }
+                    break;
+                case 'profiles.yml':
+                case 'projects.yml':
+                    if (file_exists($_SERVER['HOME'].'/'.$file)) {
+                        $this->getLogger()->debug('Found '.$file.' in '.$_SERVER['HOME']);
+                        $location = $_SERVER['HOME'].'/'.$file;
+                    } elseif (file_exists('/etc/behat-ci/'.$file)) {
+                        $this->getLogger()->debug('Found '.$file.' in /etc/behat-ci/');
+                        $location = '/etc/behat-ci/'.$file;
+                    } else {
+                        $location = ($config['locations'][$file] === $file) ?
+                          dirname(__FILE__).'/../../../'.$file : $config['locations'][$file];
+                          $this->getLogger()->debug($file.' found in '.$location.' per settings.yml');
+                    }
+                    if (!isset($location)) {
+                        throw new Exception("File: ".$file." not found. \n\nPlease create it in /etc/behat-ci/ ".$file.", or ".$_SERVER['HOME']." . /.behat_ci/".$file);
+                    }
+                    break;
+                default:
+                    $location = null;
+            }
+        } catch (Exception $e) {
+            $this->getLogger()->error(sprintf("Files: not found: \n %s", $e->getMessage()));
+            exit(1);
         }
 
-        return (!is_null($location)) ? $location : die("Can not find $file");
-
+        return $location;
     }
 
     //configuration of the command's name, arguments, options, etc
@@ -110,9 +120,10 @@ class Schedule extends BehatCi
                 $bhQ = $config['locations']['queue'];
             //write timestamp, project name, instance to queue.
             try {
-                $queue = fopen($bhQ.'.txt', "a") or die("Unable to open file!");
-            } catch (ParseException $e) {
+                $queue = fopen($bhQ.'.txt', "a");
+            } catch (Exception $e) {
                   $this->getLogger()->error(sprintf("Can not find the queue file:\n %s", $e->getMessage));
+                  exit(1);
             }
             if ($revision) {
                 fwrite($queue, '/tmp/'.$project.'_'.$env.'.yml generated and prepared for testing on '.date("D M j G:i:s")." with revision ID ".$revision."\n");
