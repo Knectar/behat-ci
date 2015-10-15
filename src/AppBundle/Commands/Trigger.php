@@ -124,7 +124,7 @@ class Trigger extends Schedule
         $notifications = array_key_exists('notify', $projects[$project]) ? true : false;
         $behatLocation = $this->getLocation($this->getYamlParser(), 'behat');
         //Run the behat testing command.
-        if (!is_null($additionalParams) {
+        if (!is_null($additionalParams)) {
             echo $behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml'.$additionalParams;
             echo shell_exec($behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml'.$additionalParams);
             $this->getLogger()->info(shell_exec($behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml'.$additionalParams));
