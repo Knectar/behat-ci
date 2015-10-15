@@ -3,14 +3,14 @@
 namespace AppBundle\Commands;
 
 use AppBundle\Commands\BehatCi;
+use Symfony\Component\Yaml\Parser;
+use Symfony\Component\Yaml\Exception\ParseException;
+use Symfony\Component\Yaml\Dumper;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
-use Symfony\Component\Yaml\Parser;
-use Symfony\Component\Yaml\Exception\ParseException;
-use Symfony\Component\Yaml\Dumper;
 
 
 /**
@@ -143,7 +143,6 @@ class Schedule extends BehatCi
     protected function readConfigFiles($project, $env, InputInterface $input, OutputInterface $output)
     {
         $config = $this->Settings();
-        var_dump($config);
         try {
             $this->getLogger()->info('Schedule Called');
         } catch (Exception $e) {
@@ -176,7 +175,10 @@ class Schedule extends BehatCi
             //gets profiles.yml as array
             $profiles = $this->getYamlParser()->parse(file_get_contents($profilesLocation));
         } catch (ParseException $e) {
-            $this->reportError(sprintf("Unable to parse the YAML string: %s\n", $e->getMessage()), $output);
+            $error = sprintf("Unable to parse the YAML string: %s", $e->getMessage());
+
+                $output->writeln('<error>'.$error.'<error>');
+                $this->getLogger()->error($error);
             exit(1);
         }
 

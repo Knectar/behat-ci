@@ -2,6 +2,7 @@
 namespace AppBundle\Commands;
 
 use Symfony\Component\Yaml\Parser;
+use Symfony\Component\Yaml\Exception\ParseException;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -30,27 +31,21 @@ class BehatCi extends ContainerAwareCommand
                 'queue' => '/etc/bhqueue',
                 'projects.yml' => 'projects.yml',
                 'profiles.yml' => 'profiles.yml',
-                'behat' => '/home/josh/.composer/vendor/bin',
+                'behat' => $_SERVER['HOME'].'/.composer/vendor/bin',
                 'project_base' => '/srv/www/',
             ],
         ];
-        $yml = ($yml = null) ? $this->getYamlParser()->parse(file_get_contents(dirname(__FILE__).'/../../../settings.yml')) : $yml;
-        /* todo: output errors
-        if ($output->isDebug()) {
-            $output->writeln("Settings:");
-            $output->writeln(var_export($config, true));
+//print (file_get_contents(dirname(__FILE__).'/../../../settings.yml'));
+        try {
+            $yml = (is_null($this->yml)) ? $this->getYamlParser()->parse(file_get_contents(dirname(__FILE__).'/../../../settings.yml')) : $this->yml;
+            if(is_null($yml)) {
+                throw new ParseException("Can't access Settings file.");
+            }
+        } catch(ParseException $e) {
+             $this->getLogger()->error($e->getMessage());
+              exit(1);
         }
-         */
         return $config = array_merge($config, (array) $yml);
-    }
-
-    /**
-     * Outputs and error to both the debug log and the terminal
-     */
-    protected function reportError($error, OutputInterface $output)
-    {
-            $this->getLogger()->error($error);
-            $output->writeln('<error> '.$error.'<error>');
     }
 
     /**
