@@ -19,9 +19,39 @@ use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 class BehatCi extends ContainerAwareCommand
 {
     //todo: public $output = new ConsoleOutput();
-    var $yml;
-    var $config;
+    public $yml = null;
+    public $config = null;
 
+    /**
+     *  Returns settings array.
+     *  @return array
+    */
+    public function settings()
+    {
+        // set defaults from settings.yml
+        $config = [
+            'locations' => [
+                'queue' => '/etc/bhqueue',
+                'projects.yml' => 'projects.yml',
+                'profiles.yml' => 'profiles.yml',
+                'behat' => '/home/josh/.composer/vendor/bin',
+                'project_base' => '/srv/www/',
+            ],
+        ];
+        $yml = ($yml = null) ? $this->getYamlParser()->parse(file_get_contents(dirname(__FILE__).'/../../../settings.yml')) : $yml;
+        /* todo: output errors
+        if ($output->isDebug()) {
+            $output->writeln("Settings:");
+            $output->writeln(var_export($config, true));
+        }
+         */
+        return $config = array_merge($config, (array) $yml);
+    }
+
+    /**
+     * adds debug code
+     * @return string
+     */
     protected function getLogger()
     {
         //create logger
@@ -33,30 +63,7 @@ class BehatCi extends ContainerAwareCommand
     {
         //Create yml parser
         $yaml = new Parser();
+
         return $yaml;
-    }
-    /**
-     *  Returns settings array.
-    */
-    public function settings()
-    {
-        // set defaults from settings.yml
-        $config = [
-            'locations' => [
-                'queue' => '/etc/bhqueue',
-                'projects.yml' => 'projects.yml',
-                'profiles.yml' => 'profiles.yml',
-                'behat' => '/home/josh/.composer/vendor/bin',
-                'project_base' => '/srv/www/'
-            ],
-        ];
-        $yml = ($yml = null) ? $this->getYamlParser()->parse(file_get_contents(dirname(__FILE__).'/../../../settings.yml')) : $yml;
-        /* todo: output errors
-        if ($output->isDebug()) {
-            $output->writeln("Settings:");
-            $output->writeln(var_export($config, true));
-        }
-         */
-        return $config = array_merge($config, (array) $yml);
     }
 }
