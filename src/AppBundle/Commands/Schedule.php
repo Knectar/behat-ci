@@ -147,12 +147,6 @@ class Schedule extends BehatCi
         } catch (Exception $e) {
             $output->writeln('Could not write to /var/log');
         }
-        $behatLocation = $this->getLocation($this->getYamlParser(), 'behat');
-        if (!file_exists($behatLocation)) {
-            $this->getLogger()->info('Behat not found at '.$behatLocation.'. Please set the absolute path to your behat binary in settings.yml');
-            die('Behat not found at '.$behatLocation.'. Please set the absolute path to your behat binary in settings.yml');
-        }
-
         if (!file_exists('/etc/behat-ci')) {
             $this->getLogger()->debug('Creating directory etc/behat-ci/');
             $this->getLogger()->debug(shell_exec('mkdir -p /etc/behat-ci/'));
