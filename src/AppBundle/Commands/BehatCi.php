@@ -44,9 +44,9 @@ class BehatCi extends ContainerAwareCommand
                 $this->getLogger()->error($e->getMessage());
                 exit(1);
         }
-        $config = array_merge($config, (array) $yml);
+        $this->config = array_merge($config, (array) $yml);
 
-        return $config;
+        return $this->config;
     }
 
     /**
