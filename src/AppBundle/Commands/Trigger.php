@@ -43,7 +43,7 @@ class Trigger extends Schedule
                     if ($e == 'all') {
                         //Get all the environments for the project from projects.yml
                         foreach ($projects[$p]['environments'] as $environment) {
-                            $this->test($p, $projects, $environment, $this->additionalParamsStringBuilder($behatFlags, $rid, $environment), $rid);
+                            $this->test($p, $projects, $environment, $this->additionalParamsStringBuilder($behatFlags, $rid, $environment));
                         }
                     } else {
                         $this->test($p, $projects, $env, $this->additionalParamsStringBuilder($behatFlags, $rid, $env));
@@ -63,21 +63,29 @@ class Trigger extends Schedule
     protected function readQueue($queue)
     {
         $projectYmlList = array();
-        $file = fopen($queue, "r") or exit("Unable to open file!");
-        while (!feof($file)) {
-            $lineinQueue = fgets($file);
-            //Grab the project .yml file name in isolation from bhqueue and its associated environments
-            $pStringOffsetEnd = strrpos($lineinQueue, "_");
-            $projectName = substr($lineinQueue, 5, $pStringOffsetEnd - strlen($lineinQueue));
-            $environmentName = substr($lineinQueue, $pStringOffsetEnd + 1, strrpos($lineinQueue, ".yml") - $pStringOffsetEnd - 1);
-            $revisionId = substr($lineinQueue, strrpos($lineinQueue, "ID") + 3, strlen($lineinQueue));
-            //add the project name to the array (if we haven't already,there could be multiple pushes per minute)
-            if (!in_array($projectName, $projectYmlList) && strlen($projectName) > 0) {
-                $projectYmlList[$projectName][$environmentName] = $revisionId;
-                // var_dump($projectYmlList);
+        try {
+            $file = fopen($queue, "r");
+            if (!$file) {
+                throw new ParseException("Unable to open file!");
             }
+        } catch(ParseException $e) {
+          echo $e->getMessage();
+          exit(1);
+        }
+        while (!feof($file)) {
+          $lineinQueue = fgets($file);
+          //Grab the project .yml file name in isolation from bhqueue and its associated environments
+          $pStringOffsetEnd = strrpos($lineinQueue, "_");
+          $projectName = substr($lineinQueue, 5, $pStringOffsetEnd - strlen($lineinQueue));
+          $environmentName = substr($lineinQueue, $pStringOffsetEnd + 1, strrpos($lineinQueue, ".yml") - $pStringOffsetEnd - 1);
+          $revisionId = substr($lineinQueue, strrpos($lineinQueue, "ID") + 3, strlen($lineinQueue));
+          //add the project name to the array (if we haven't already,there could be multiple pushes per minute)
+          if (!in_array($projectName, $projectYmlList) && strlen($projectName) > 0) {
+            $projectYmlList[$projectName][$environmentName] = $revisionId;
+          }
         }
         fclose($file);
+
 
         return $projectYmlList;
     }
@@ -95,7 +103,6 @@ class Trigger extends Schedule
             if ($flag == 'out') {
                 $time = date('Y-m-d-His');
                 $pathToOutput = substr($param, 0, strrpos($param, "."));
-                $fileExtension = substr($param, strrpos($param, "."), strlen($param));
                 $revisionId = substr(preg_replace('~[\r\n]+~', '', $revisionId), 0, 6);
                 $addFlagString = $addFlagString.' --'.$flag.' '.$pathToOutput.'-'.$environment.'-'.$time.'-'.$revisionId;
             } else {
@@ -117,32 +124,19 @@ class Trigger extends Schedule
         $behatLocation = $this->getLocation($this->getYamlParser(), 'behat');
         //Run the behat testing command.
         try {
-            if (!is_null($additionalParams)) {
-                echo $behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml'.$additionalParams;
-                $execute = shell_exec($behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml'.$additionalParams);
-                $this->getLogger()->info(shell_exec($behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml'.$additionalParams));
-                foreach ($projects[$project]['profiles'] as $r) {
-                    $this->getLogger()->info('Running tests on '.$r.' for '.$project.'...');
-                    $this->getLogger()->info(shell_exec($behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml -p '.$r.' '.$additionalParams));
-                    if ($notifications) {
-                        // todo: Email($project, $projects, 'Testing of '.$project.' running on '.$r.' complete');
-                        $this->slack('Testing of '.$project.' running on '.$r.' complete', $projects[$project]['notify']['slack']['user'], $projects[$project]['notify']['slack']['endpoint'], $projects[$project]['notify']['slack']['target']);
-                    }
-                }
-            } else {
-                $execute = shell_exec($behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml');
-                $this->getLogger()->info(shell_exec($behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml'));
-                foreach ($projects[$project]['profiles'] as $r) {
-                    $this->getLogger()->info('Running tests on '.$r.' for '.$project.'...');
-                    $this->getLogger()->info(shell_exec($behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml -p '.$r));
-                    if ($notifications) {
-                        // todo: notifyEmail($project, $projects, 'Testing of '.$project.' running on '.$r.' complete');
-                        $this->slack('Testing of '.$project.' running on '.$r.' complete', $projects[$project]['notify']['slack']['user'], $projects[$project]['notify']['slack']['endpoint'], $projects[$project]['notify']['slack']['target']);
-                    }
-                }
+            echo $behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml'.$additionalParams;
+            echo shell_exec($behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml'.$additionalParams);
+            $this->getLogger()->info(shell_exec($behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml'.$additionalParams));
+            foreach ($projects[$project]['profiles'] as $r) {
+              $this->getLogger()->info('Running tests on '.$r.' for '.$project.'...');
+              $this->getLogger()->info(shell_exec($behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml -p '.$r.' '.$additionalParams));
+              if ($notifications) {
+                // todo: Email($project, $projects, 'Testing of '.$project.' running on '.$r.' complete');
+                $this->slack('Testing of '.$project.' running on '.$r.' complete', $projects[$project]['notify']['slack']['user'], $projects[$project]['notify']['slack']['endpoint'], $projects[$project]['notify']['slack']['target']);
+              }
             }
         } catch(ParseException $e) {
-            $this->getLogger()->error("Test Failed: ".$e->message());
+            $this->getLogger()->error("Test Failed: ".$e->getMessage());
         }
         //Remove the file after tests have been run
         shell_exec('rm /tmp/'.$project.'_'.$env.'.yml');
