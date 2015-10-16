@@ -170,9 +170,8 @@ class Schedule extends BehatCi
             $profiles = $this->getYamlParser()->parse(file_get_contents($profilesLocation));
         } catch (ParseException $e) {
             $error = sprintf("Unable to parse the YAML string: %s", $e->getMessage());
-
-                $output->writeln('<error>'.$error.'<error>');
-                $this->getLogger()->error($error);
+            $output->writeln('<error>'.$error.'<error>');
+            $this->getLogger()->error($error);
             exit(1);
         }
 

@@ -118,18 +118,18 @@ class Trigger extends Schedule
      */
     protected function test($project, $projects, $env, $additionalParams = null)
     {
+        $additionalParams = (is_null($additionalParams))? '': $additionalParams;
         $projectsLocation = $this->getLocation($this->getYamlParser(), 'projects.yml');
         $projects = $this->getYamlParser()->parse(file_get_contents($projectsLocation));
         $notifications = array_key_exists('notify', $projects[$project]) ? true : false;
         $behatLocation = $this->getLocation($this->getYamlParser(), 'behat');
         //Run the behat testing command.
         try {
-            echo $behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml'.$additionalParams;
-            echo shell_exec($behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml'.$additionalParams);
-            $this->getLogger()->info(shell_exec($behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml'.$additionalParams));
             foreach ($projects[$project]['profiles'] as $r) {
-                $this->getLogger()->info('Running tests on '.$r.' for '.$project.'...');
-                $this->getLogger()->info(shell_exec($behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml -p '.$r.' '.$additionalParams));
+                $exeString = $behatLocation.' -c /tmp/'.$project.'_'.$env.'.yml -p '.$r.' '.$additionalParams;
+                $exe = shell_exec($exeString);
+                $this->getLogger()->info(shell_exec($exe));
+                $this->getLogger()->info(shell_exec());
                 if ($notifications) {
                     // todo: Email($project, $projects, 'Testing of '.$project.' running on '.$r.' complete');
                     $this->slack('Testing of '.$project.' running on '.$r.' complete', $projects[$project]['notify']['slack']['user'], $projects[$project]['notify']['slack']['endpoint'], $projects[$project]['notify']['slack']['target']);
