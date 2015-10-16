@@ -21,7 +21,7 @@ class Trigger extends Schedule
 
     /**
      * executes code when command is called
-    **/
+     **/
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->formatOutput($output);
@@ -74,12 +74,12 @@ class Trigger extends Schedule
         }
         while (!feof($file)) {
             $lineinQueue = fgets($file);
-          //Grab the project .yml file name in isolation from bhqueue and its associated environments
+            //Grab the project .yml file name in isolation from bhqueue and its associated environments
             $pStringOffsetEnd = strrpos($lineinQueue, "_");
             $projectName = substr($lineinQueue, 5, $pStringOffsetEnd - strlen($lineinQueue));
             $environmentName = substr($lineinQueue, $pStringOffsetEnd + 1, strrpos($lineinQueue, ".yml") - $pStringOffsetEnd - 1);
             $revisionId = substr($lineinQueue, strrpos($lineinQueue, "ID") + 3, strlen($lineinQueue));
-          //add the project name to the array (if we haven't already,there could be multiple pushes per minute)
+            //add the project name to the array (if we haven't already,there could be multiple pushes per minute)
             if (!in_array($projectName, $projectYmlList) && strlen($projectName) > 0) {
                 $projectYmlList[$projectName][$environmentName] = $revisionId;
             }
@@ -131,7 +131,7 @@ class Trigger extends Schedule
                 $this->getLogger()->info('Running tests on '.$r.' for '.$project.'...');
                 $this->getLogger()->info(shell_exec($behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml -p '.$r.' '.$additionalParams));
                 if ($notifications) {
-                  // todo: Email($project, $projects, 'Testing of '.$project.' running on '.$r.' complete');
+                    // todo: Email($project, $projects, 'Testing of '.$project.' running on '.$r.' complete');
                     $this->slack('Testing of '.$project.' running on '.$r.' complete', $projects[$project]['notify']['slack']['user'], $projects[$project]['notify']['slack']['endpoint'], $projects[$project]['notify']['slack']['target']);
                 }
             }
