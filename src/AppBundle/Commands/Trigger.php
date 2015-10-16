@@ -93,7 +93,7 @@ class Trigger extends Schedule
         $addFlagString = ' ';
         foreach ($additionalBehatParameters as $flag => $param) {
             if ($flag == 'out') {
-                $time = date('YmdHis');
+                $time = date('Y-m-d-His');
                 $pathToOutput = substr($param, 0, strrpos($param, "."));
                 $fileExtension = substr($param, strrpos($param, "."), strlen($param));
                 $revisionId = substr(preg_replace('~[\r\n]+~', '', $revisionId), 0, 6);
@@ -119,7 +119,7 @@ class Trigger extends Schedule
         try {
             if (!is_null($additionalParams)) {
                 echo $behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml'.$additionalParams;
-                $test = shell_exec($behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml'.$additionalParams);
+                $execute = shell_exec($behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml'.$additionalParams);
                 $this->getLogger()->info(shell_exec($behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml'.$additionalParams));
                 foreach ($projects[$project]['profiles'] as $r) {
                     $this->getLogger()->info('Running tests on '.$r.' for '.$project.'...');
@@ -130,7 +130,7 @@ class Trigger extends Schedule
                     }
                 }
             } else {
-                $test = shell_exec($behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml');
+                $execute = shell_exec($behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml');
                 $this->getLogger()->info(shell_exec($behatLocation.'/behat -c /tmp/'.$project.'_'.$env.'.yml'));
                 foreach ($projects[$project]['profiles'] as $r) {
                     $this->getLogger()->info('Running tests on '.$r.' for '.$project.'...');
