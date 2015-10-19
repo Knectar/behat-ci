@@ -139,7 +139,7 @@ class Trigger extends Schedule
             }
         } catch (ParseException $e) {
             $error = "Test Failed: ".$e->getMessage();
-            $this->getLogger()->error();
+            $this->getLogger()->error($error);
             if ($notifications) {
                 $this->slack('Testing of '.$project.' running on '.$r.' failed.', $projects[$project]['notify']['slack']['user'], $projects[$project]['notify']['slack']['endpoint'], $projects[$project]['notify']['slack']['target']);
             }
