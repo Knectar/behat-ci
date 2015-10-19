@@ -111,7 +111,6 @@ class Trigger extends Schedule
                 $addFlagString = $addFlagString.'--'.$flag.' '.$param;
             }
         }
-        echo $addFlagString;
 
         return $addFlagString;
     }
@@ -133,6 +132,7 @@ class Trigger extends Schedule
         try {
             foreach ($projects[$project]['profiles'] as $r) {
                 $exeString = $behatLocation.' -c /tmp/'.$project.'_'.$env.'.yml -p '.$r.' '.$additionalParams;
+                echo($exeString);
                 $exe = shell_exec($exeString);
                 if (!$exe) {
                     throw new ParseException("Running behat failed: ".$exe);
