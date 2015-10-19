@@ -48,7 +48,7 @@ class Trigger extends Schedule
                             $this->test($p, $projects, $environment, $this->additionalParamsStringBuilder($behatFlags, $rid, $projects[$p], $environment));
                         }
                     } else {
-                        $this->test($p, $projects, $env, $this->additionalParamsStringBuilder($behatFlags, $projects[$p], $rid, $env));
+                        $this->test($p, $projects, $env, $this->additionalParamsStringBuilder($behatFlags, $rid, $projects[$p], $env));
                     }
                 }
             }
