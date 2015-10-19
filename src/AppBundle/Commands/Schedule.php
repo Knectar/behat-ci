@@ -202,9 +202,15 @@ class Schedule extends BehatCi
             }
             //Check for Twig output/emuse BehatHTMLFormatter
             if (array_key_exists('formatters', $profiles['default']) && array_key_exists('twigOutputPath', $projects[$project])) {
-                $profiles['default']['formatters']['html']['output_path'] = $projects[$project]['twigOutputPath'];
+                $profiles['default']['formatters']['html']['output_path'] = $projects[$project]['twigOutputPath'].'/'.$project;
                 if (array_key_exists('emuse\BehatHTMLFormatter\BehatHTMLFormatterExtension', $profiles['default']['extensions'])) {
                     $profiles['default']['extensions']['emuse\BehatHTMLFormatter\BehatHTMLFormatterExtension']['file_name'] = 'index';
+                }
+                foreach ($projects[$project]['profiles'] as $p){
+                  if(array_key_exists('emuse\BehatHTMLFormatter\BehatHTMLFormatterExtension', $profiles[$p]['extensions'])) {
+                    $time = date('Y-m-d-His');
+                    $profiles[$p]['extensions']['emuse\BehatHTMLFormatter\BehatHTMLFormatterExtension']['file_name'] = $project.'-'.$p.'-'.$time;
+                  }
                 }
             } else {
                 // Fill in the baseurl (Behat 2)

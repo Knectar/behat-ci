@@ -8,4 +8,4 @@ locations:
   ##Absolute path of the behat binary
   behat: /home/josh/.composer/vendor/bin
   ##
-  fileoutputBaseURL: http://mytests.com/path/to/project
+  project_base: http://mytests.com/path/to/project

@@ -24,10 +24,10 @@ class BehatCi extends ContainerAwareCommand
         $config = [
             'locations' => [
                 'queue' => '/etc/bhqueue',
-                'projects.yml' => 'projects.yml',
-                'profiles.yml' => 'profiles.yml',
+                'projects.yml' => '/etc/behat-ci/projects.yml',
+                'profiles.yml' => '/etc/behat-ci/profiles.yml',
                 'behat' => $_SERVER['HOME'].'/.composer/vendor/bin',
-                'project_base' => '/srv/www/',
+                'project_base' => '/home/jacob/Knectar/',
             ],
         ];
         try {
@@ -40,7 +40,6 @@ class BehatCi extends ContainerAwareCommand
                 exit(1);
         }
         $this->config = array_merge($config, (array) $yml);
-
         return $this->config;
     }
 
