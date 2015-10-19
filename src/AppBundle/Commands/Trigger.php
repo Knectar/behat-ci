@@ -128,7 +128,6 @@ class Trigger extends Schedule
             foreach ($projects[$project]['profiles'] as $r) {
                 $exeString = $behatLocation.' -c /tmp/'.$project.'_'.$env.'.yml -p '.$r.' '.$additionalParams;
                 $exe = shell_exec($exeString);
-                print "Running behat: ".$exe;
                 if (!$exe) {
                     throw new ParseException("Running behat failed: ".$exe);
                 } else {
