@@ -128,15 +128,21 @@ class Trigger extends Schedule
             foreach ($projects[$project]['profiles'] as $r) {
                 $exeString = $behatLocation.' -c /tmp/'.$project.'_'.$env.'.yml -p '.$r.' '.$additionalParams;
                 $exe = shell_exec($exeString);
-                $this->getLogger()->info(shell_exec($exe));
-                $this->getLogger()->info(shell_exec());
+                if (!$exe) {
+                    throw new ParseException("Running behat failed: ".$exe);
+                }
+                $this->getLogger()->info("running ".$exeString."\n\nReturned: $exe");
                 if ($notifications) {
                     // todo: Email($project, $projects, 'Testing of '.$project.' running on '.$r.' complete');
                     $this->slack('Testing of '.$project.' running on '.$r.' complete', $projects[$project]['notify']['slack']['user'], $projects[$project]['notify']['slack']['endpoint'], $projects[$project]['notify']['slack']['target']);
                 }
             }
         } catch (ParseException $e) {
-            $this->getLogger()->error("Test Failed: ".$e->getMessage());
+            $error = "Test Failed: ".$e->getMessage();
+            $this->getLogger()->error();
+            if ($notifications) {
+                $this->slack('Testing of '.$project.' running on '.$r.' failed.', $projects[$project]['notify']['slack']['user'], $projects[$project]['notify']['slack']['endpoint'], $projects[$project]['notify']['slack']['target']);
+            }
         }
         //Remove the file after tests have been run
         shell_exec('rm /tmp/'.$project.'_'.$env.'.yml');
