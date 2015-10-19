@@ -104,7 +104,8 @@ class Trigger extends Schedule
                 $time = date('Y-m-d-His');
                 $pathToOutput = substr($param, 0, strrpos($param, "."));
                 $revisionId = substr(preg_replace('~[\r\n]+~', '', $revisionId), 0, 6);
-                $addFlagString = $addFlagString.' --'.$flag.' '.$pathToOutput.'-'.$environment.'-'.$time.'-'.$revisionId;
+                // $addFlagString = $addFlagString.' --'.$flag.' '.$pathToOutput.'-'.$environment.'-'.$time.'-'.$revisionId;
+                $addFlagString = $addFlagString.' --'.$flag.' '.$pathToOutput.$revisionId;
             } else {
                 $addFlagString = $addFlagString.'--'.$flag.' '.$param;
             }
@@ -122,6 +123,9 @@ class Trigger extends Schedule
         $projectsLocation = $this->getLocation($this->getYamlParser(), 'projects.yml');
         $projects = $this->getYamlParser()->parse(file_get_contents($projectsLocation));
         $notifications = array_key_exists('notify', $projects[$project]) ? true : false;
+        if(!$this->config['saucelabs']){
+            $notifications = false;
+        }
         $behatLocation = $this->getLocation($this->getYamlParser(), 'behat');
         //Run the behat testing command.
         try {

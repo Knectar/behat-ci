@@ -6,6 +6,7 @@ locations:
   projects.yml: projects.yml
   profiles.yml: profiles.yml
   ##Absolute path of the behat binary
-  behat: /home/josh/.composer/vendor/bin
+  behat: /home/josh/.composer/vendor/bin/behat
   ##
-  fileoutputBaseURL: http://mytests.com/path/to/project
+  project_base: http://mytests.com/path/to/project
+  saucelabs: false
