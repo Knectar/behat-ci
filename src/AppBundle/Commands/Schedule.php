@@ -188,6 +188,13 @@ class Schedule extends BehatCi
         $behatYaml = array();
 
         if (array_key_exists('suites', $profiles['default'])) {
+            if(!$this->config['saucelabs']){
+                foreach($profiles as $p){
+                  if(array_key_exists('wd_host', $profiles[$p]['extensions']['Behat\MinkExtension']['selenium2'])){
+                      $profiles[$p]['extensions']['Behat\MinkExtension']['selenium2']['wd_host'] =  'http://localhost:4444/wd/';
+                  }
+                }
+            }
             //Fill in the baseurl (Behat 3)
             $profiles['default']['extensions']['Behat\MinkExtension']['base_url'] = $projects[$project]['environments'][$env]['base_url'];
             //Fill in path to the features directory of the project in default suite
@@ -225,7 +232,6 @@ class Schedule extends BehatCi
                     // Fill in path to the features directory of the project
                     $profiles['default']['paths']['features'] = $this->config['locations']['project_base'].$project.'/'.$env.'/.behat';
                 }
-
             }
             //Add the default profile to the generated yaml
             $behatYaml['default'] = $profiles['default'];

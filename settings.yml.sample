@@ -9,3 +9,4 @@ locations:
   behat: /home/josh/.composer/vendor/bin/behat
   ##
   project_base: http://mytests.com/path/to/project
+  saucelabs: false

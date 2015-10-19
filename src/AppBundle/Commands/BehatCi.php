@@ -28,6 +28,7 @@ class BehatCi extends ContainerAwareCommand
                 'profiles.yml' => '/etc/behat-ci/profiles.yml',
                 'behat' => $_SERVER['HOME'].'/.composer/vendor/bin',
                 'project_base' => '/home/jacob/Knectar/',
+                'saucelabs' => false,
             ],
         ];
         try {

@@ -123,6 +123,9 @@ class Trigger extends Schedule
         $projectsLocation = $this->getLocation($this->getYamlParser(), 'projects.yml');
         $projects = $this->getYamlParser()->parse(file_get_contents($projectsLocation));
         $notifications = array_key_exists('notify', $projects[$project]) ? true : false;
+        if(!$this->config['saucelabs']){
+            $notifications = false;
+        }
         $behatLocation = $this->getLocation($this->getYamlParser(), 'behat');
         //Run the behat testing command.
         try {
