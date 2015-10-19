@@ -189,7 +189,7 @@ class Schedule extends BehatCi
 
         if (array_key_exists('suites', $profiles['default'])) {
             if(!$this->config['saucelabs']){
-                foreach($profiles as $p){
+                foreach($profiles as $p => $i){
                   if(array_key_exists('wd_host', $profiles[$p]['extensions']['Behat\MinkExtension']['selenium2'])){
                       $profiles[$p]['extensions']['Behat\MinkExtension']['selenium2']['wd_host'] =  'http://localhost:4444/wd/';
                   }
@@ -216,8 +216,8 @@ class Schedule extends BehatCi
                 foreach ($projects[$project]['profiles'] as $p){
                   if(array_key_exists('emuse\BehatHTMLFormatter\BehatHTMLFormatterExtension', $profiles[$p]['extensions'])) {
                     $time = date('Y-m-d-His');
-                    $profiles[$p]['extensions']['emuse\BehatHTMLFormatter\BehatHTMLFormatterExtension']['file_name'] = $project.'-'.$p.'-'.$time;
-                    $profiles[$p]['formatters']['html']['output_path'] = $projects[$project]['twigOutputPath'].'/'.$project;
+                    $profiles[$p]['extensions']['emuse\BehatHTMLFormatter\BehatHTMLFormatterExtension']['file_name'] = $project.'-'.$env.'-'.$p.'-'.$time;
+                    $profiles[$p]['formatters']['html']['output_path'] = $projects[$project]['twigOutputPath'];
                   }
                 }
             } else {

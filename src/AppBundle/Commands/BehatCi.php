@@ -28,8 +28,8 @@ class BehatCi extends ContainerAwareCommand
                 'profiles.yml' => '/etc/behat-ci/profiles.yml',
                 'behat' => $_SERVER['HOME'].'/.composer/vendor/bin',
                 'project_base' => '/home/jacob/Knectar/',
-                'saucelabs' => false,
             ],
+            'saucelabs' => false
         ];
         try {
             $yml = (is_null($this->yml)) ? $this->getYamlParser()->parse(file_get_contents(dirname(__FILE__).'/../../../settings.yml')) : $this->yml;
@@ -40,6 +40,7 @@ class BehatCi extends ContainerAwareCommand
                 $this->getLogger()->error($e->getMessage());
                 exit(1);
         }
+
         $this->config = array_merge($config, (array) $yml);
         return $this->config;
     }
