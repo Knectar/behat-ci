@@ -111,6 +111,7 @@ class Trigger extends Schedule
                 $addFlagString = $addFlagString.'--'.$flag.' '.$param;
             }
         }
+        echo $addFlagString;
 
         return $addFlagString;
     }
