@@ -102,10 +102,11 @@ class Trigger extends Schedule
         foreach ($additionalBehatParameters as $flag => $param) {
             if ($flag == 'out') {
                 $time = date('Y-m-d-His');
-                $pathToOutput = substr($param, 0, strrpos($param, "."));
+                // $pathToOutput = substr($param, 0, strrpos($param, "."));
+                $pathToOutput = 'index';
                 $revisionId = substr(preg_replace('~[\r\n]+~', '', $revisionId), 0, 6);
                 // $addFlagString = $addFlagString.' --'.$flag.' '.$pathToOutput.'-'.$environment.'-'.$time.'-'.$revisionId;
-                $addFlagString = $addFlagString.' --'.$flag.' '.$pathToOutput.$revisionId;
+                $addFlagString = $addFlagString.' --'.$flag.' '.$pathToOutput;
             } else {
                 $addFlagString = $addFlagString.'--'.$flag.' '.$param;
             }
