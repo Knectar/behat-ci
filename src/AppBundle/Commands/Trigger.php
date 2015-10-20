@@ -106,7 +106,9 @@ class Trigger extends Schedule
                 $pathToOutput = $pArray['twigOutputPath'];
                 $revisionId = substr(preg_replace('~[\r\n]+~', '', $revisionId), 0, 6);
                 // $addFlagString = $addFlagString.' --'.$flag.' '.$pathToOutput.'-'.$environment.'-'.$time.'-'.$revisionId;
-                $addFlagString = $addFlagString.' --'.$flag.' '.$pathToOutput.'/'.$project.'/'.$environment.'-'.$time;
+                // $addFlagString = $addFlagString.' --'.$flag.' '.$pathToOutput.'/'.$project.'/'.$environment.'-'.$time;
+                $addFlagString = $addFlagString.' --'.$flag.' '.$pathToOutput;
+
             } else {
                 $addFlagString = $addFlagString.'--'.$flag.' '.$param;
             }
