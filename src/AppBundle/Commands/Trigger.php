@@ -45,10 +45,10 @@ class Trigger extends Schedule
                     if ($e == 'all') {
                         //Get all the environments for the project from projects.yml
                         foreach ($projects[$p]['environments'] as $environment) {
-                            $this->test($p, $projects, $environment, $this->additionalParamsStringBuilder($behatFlags, $rid, $projects[$p], $environment));
+                            $this->test($p, $projects, $environment, $this->additionalParamsStringBuilder($behatFlags, $rid, $p, $projects[$p], $environment));
                         }
                     } else {
-                        $this->test($p, $projects, $env, $this->additionalParamsStringBuilder($behatFlags, $rid, $projects[$p], $env));
+                        $this->test($p, $projects, $env, $this->additionalParamsStringBuilder($behatFlags, $rid, $p, $projects[$p], $env));
                     }
                 }
             }
@@ -93,7 +93,7 @@ class Trigger extends Schedule
     /**
      * Adds the revision id to the output filename if output formatting is specified
      **/
-    protected function additionalParamsStringBuilder($additionalBehatParameters, $revisionId, $project, $environment)
+    protected function additionalParamsStringBuilder($additionalBehatParameters, $revisionId, $project, $pArray, $environment)
     {
         if ($additionalBehatParameters == null) {
             return null;
@@ -103,10 +103,10 @@ class Trigger extends Schedule
             if ($flag == 'out') {
                 $time = date('Y-m-d-His');
                 // $pathToOutput = substr($param, 0, strrpos($param, "."));
-                $pathToOutput = $project['twigOutputPath'];
+                $pathToOutput = $pArray['twigOutputPath'];
                 $revisionId = substr(preg_replace('~[\r\n]+~', '', $revisionId), 0, 6);
                 // $addFlagString = $addFlagString.' --'.$flag.' '.$pathToOutput.'-'.$environment.'-'.$time.'-'.$revisionId;
-                $addFlagString = $addFlagString.' --'.$flag.' '.$pathToOutput.'/'.$project.'/'.$env.'-'.$time;
+                $addFlagString = $addFlagString.' --'.$flag.' '.$pathToOutput.'/'.$project.'/'.$environment.'-'.$time;
             } else {
                 $addFlagString = $addFlagString.'--'.$flag.' '.$param;
             }

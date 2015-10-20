@@ -17,7 +17,6 @@ use Symfony\Component\Console\Formatter\OutputFormatterStyle;
  */
 class Schedule extends BehatCi
 {
-
     protected function getLogger()
     {
         //create logger
