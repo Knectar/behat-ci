@@ -210,7 +210,7 @@ class Schedule extends BehatCi
             if (array_key_exists('formatters', $profiles['default']) && array_key_exists('twigOutputPath', $projects[$project])) {
                 $profiles['default']['formatters']['html']['output_path'] = $projects[$project]['twigOutputPath'];
                 if (array_key_exists('emuse\BehatHTMLFormatter\BehatHTMLFormatterExtension', $profiles['default']['extensions'])) {
-                    $profiles['default']['extensions']['emuse\BehatHTMLFormatter\BehatHTMLFormatterExtension']['file_name'] = 'index';
+                    $profiles['default']['extensions']['emuse\BehatHTMLFormatter\BehatHTMLFormatterExtension']['file_name'] = $project.'-'.$env.'-'.$p.'-'.$time;
                 }
                 foreach ($projects[$project]['profiles'] as $p){
                   if(array_key_exists('emuse\BehatHTMLFormatter\BehatHTMLFormatterExtension', $profiles[$p]['extensions'])) {
