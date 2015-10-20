@@ -107,7 +107,7 @@ class Trigger extends Schedule
                 $revisionId = substr(preg_replace('~[\r\n]+~', '', $revisionId), 0, 6);
                 // $addFlagString = $addFlagString.' --'.$flag.' '.$pathToOutput.'-'.$environment.'-'.$time.'-'.$revisionId;
                 // $addFlagString = $addFlagString.' --'.$flag.' '.$pathToOutput.'/'.$project.'/'.$environment.'-'.$time;
-                $addFlagString = $addFlagString.' --'.$flag.' '.$pathToOutput.'/'$p;
+                $addFlagString = $addFlagString.' --'.$flag.' '.$pathToOutput.'/'.$p;
 
             } else {
                 $addFlagString = $addFlagString.'--'.$flag.' '.$param;
